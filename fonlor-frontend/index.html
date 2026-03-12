@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fonlor — Türkiye Fon Takip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e0f11;--bg2:#16181c;--bg3:#1e2026;--bg4:#25282f;
+    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+    --text:#f0f0f0;--text2:#8a8f9e;--text3:#555a6a;
+    --accent:#7b6ef6;--accent2:#9d93f8;--accent-bg:rgba(123,110,246,0.12);
+    --green:#3ecf8e;--red:#f56565;--amber:#f6ad55;--teal:#4fd1c5;
+    --r:12px;--rsm:8px;--rlg:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+  h1,h2,h3{font-family:'Syne',sans-serif;}
+  a{text-decoration:none;color:inherit;}
+
+  .layout{display:flex;min-height:100vh;}
+
+  .sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;position:sticky;top:0;height:100vh;flex-shrink:0;}
+  .logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+  .logo-mark{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;letter-spacing:-1px;}
+  .logo-mark span{color:var(--accent2);}
+  .logo-sub{font-size:10px;color:var(--text3);letter-spacing:.8px;margin-top:3px;}
+  .nav-sec{padding:14px 20px 5px;font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;color:var(--text2);cursor:pointer;transition:all .15s;user-select:none;}
+  .nav-item:hover{color:var(--text);background:var(--bg3);}
+  .nav-item.active{color:var(--accent2);background:var(--accent-bg);}
+  .sidebar-footer{margin-top:auto;padding:16px 20px 0;border-top:1px solid var(--border);}
+
+  .status{display:flex;align-items:center;gap:6px;padding:6px 20px;font-size:11px;color:var(--text3);}
+  .st-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);}
+  .st-dot.ok{background:var(--green);}
+  .st-dot.err{background:var(--red);}
+  .st-dot.spin{background:var(--amber);animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .topbar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:600;flex:1;}
+  .search-wrap{position:relative;}
+  .search-input{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm);padding:8px 12px 8px 34px;font-size:13px;color:var(--text);width:240px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;}
+  .search-input::placeholder{color:var(--text3);}
+  .search-input:focus{border-color:var(--accent);}
+  .si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);}
+  .chip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;user-select:none;}
+  .chip:hover{border-color:var(--border2);color:var(--text);}
+  .chip.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent2);}
+
+  .content{flex:1;overflow-y:auto;padding:24px 28px;}
+  .content::-webkit-scrollbar{width:4px;}
+  .content::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px;}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+  .stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
+  .stat-lbl{font-size:11px;color:var(--text3);margin-bottom:6px;}
+  .stat-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:600;}
+  .stat-sub{font-size:11px;color:var(--text2);margin-top:3px;}
+  .green{color:var(--green);}
+  .red{color:var(--red);}
+
+  .tbl-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;}
+  .tbl-head{display:grid;grid-template-columns:2fr .7fr 1fr 1fr .9fr .9fr 80px;padding:11px 20px;border-bottom:1px solid var(--border);font-size:10px;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;}
+  .fund-row{display:grid;grid-template-columns:2fr .7fr 1fr 1fr .9fr .9fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background .1s;color:inherit;text-decoration:none;}
+  .fund-row:last-child{border-bottom:none;}
+  .fund-row:hover{background:var(--bg3);}
+  .f-av{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;flex-shrink:0;}
+  .f-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .f-code{font-size:11px;color:var(--text3);margin-top:1px;}
+  .f-cell{font-size:13px;text-align:right;color:var(--text2);}
+  .cat-badge{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;}
+  .pct{font-size:13px;font-weight:500;}
+  .btn-d{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--text2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+  .btn-d:hover{border-color:var(--accent);color:var(--accent2);}
+  .sortable{cursor:pointer;}
+  .sortable:hover{color:var(--text2);}
+  .sort-asc::after{content:" ↑";}
+  .sort-desc::after{content:" ↓";}
+
+  .loading-box{text-align:center;padding:80px 20px;}
+  .spinner{width:36px;height:36px;border:3px solid var(--bg4);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .error-box{background:rgba(245,101,101,.07);border:1px solid rgba(245,101,101,.2);border-radius:var(--r);padding:24px;margin:20px 0;}
+  .error-box h3{color:var(--red);margin-bottom:10px;font-size:16px;}
+  .error-box p{font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:6px;}
+  .error-box code{background:var(--bg3);padding:3px 8px;border-radius:4px;font-size:12px;color:var(--amber);display:inline-block;margin:2px 0;}
+
+  /* Setup modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;}
+  .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rlg);padding:28px;width:480px;max-width:95vw;}
+  .modal h2{font-size:18px;margin-bottom:6px;}
+  .modal p{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px;}
+  .modal input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rsm);padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;margin-bottom:12px;}
+  .modal input:focus{border-color:var(--accent);}
+  .modal input::placeholder{color:var(--text3);}
+  .btn-primary{background:var(--accent);border:none;border-radius:var(--rsm);padding:10px 20px;font-size:13px;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;width:100%;}
+  .btn-primary:hover{opacity:.85;}
+  .hint{font-size:11px;color:var(--text3);margin-bottom:16px;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<!-- API URL kurulum modalı -->
+<div class="modal-overlay" id="setup-modal" style="display:none;">
+  <div class="modal">
+    <h2>🚀 Railway API URL'ini Gir</h2>
+    <p>Railway'e deploy ettikten sonra aldığın URL'i yapıştır. Örnek:<br>
+    <code style="color:var(--amber);font-size:12px;">https://fonlor-production.up.railway.app</code></p>
+    <input type="text" id="api-url-input" placeholder="https://xxx.up.railway.app" />
+    <div class="hint">Bu URL Railway panelinden "Deployments" sekmesinde görünür. Sonunda / olmadan yaz.</div>
+    <button class="btn-primary" onclick="saveApiUrl()">Kaydet ve Bağlan</button>
+  </div>
+</div>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">FON<span>LOR</span></div>
+    <div class="logo-sub" id="fund-count-sub">TEFAS · bağlanıyor...</div>
+  </div>
+  <div class="status">
+    <div class="st-dot spin" id="st-dot"></div>
+    <span id="st-label">Bağlanıyor...</span>
+  </div>
+  <div class="nav-sec">Kategori</div>
+  <div class="nav-item active" onclick="setFilter('',this)">🔳 Tüm Fonlar</div>
+  <div class="nav-item" onclick="setFilter('Hisse',this)">📈 Hisse</div>
+  <div class="nav-item" onclick="setFilter('Katılım',this)">🕌 Katılım</div>
+  <div class="nav-item" onclick="setFilter('Altın',this)">🥇 Altın</div>
+  <div class="nav-item" onclick="setFilter('Borçlanma',this)">📄 Borçlanma</div>
+  <div class="nav-item" onclick="setFilter('Para Piyasası',this)">💵 Para Piyasası</div>
+  <div class="nav-item" onclick="setFilter('Karma',this)">⚖️ Karma</div>
+  <div class="nav-sec">Ayarlar</div>
+  <div class="nav-item" onclick="changeApiUrl()">⚙️ API URL Değiştir</div>
+  <div class="sidebar-footer">
+    <div style="background:var(--accent-bg);border:1px solid rgba(123,110,246,.25);border-radius:var(--rsm);padding:12px;">
+      <div style="font-size:12px;font-weight:500;color:var(--accent2);margin-bottom:4px;">Premium</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:8px;">Tüm pozisyonlar + AI analizi</div>
+      <button style="width:100%;background:var(--accent);border:none;border-radius:6px;padding:7px;font-size:11px;color:#fff;font-family:'DM Sans';cursor:pointer;">79₺/ay</button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Tüm Fonlar</div>
+    <div class="search-wrap">
+      <span class="si">⌕</span>
+      <input class="search-input" placeholder="Fon kodu veya adı..." oninput="doSearch(this.value)">
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;" id="cat-chips">
+      <div class="chip on" onclick="setChip('',this)">Tümü</div>
+      <div class="chip" onclick="setChip('Hisse',this)">Hisse</div>
+      <div class="chip" onclick="setChip('Katılım',this)">Katılım</div>
+      <div class="chip" onclick="setChip('Altın',this)">Altın</div>
+      <div class="chip" onclick="setChip('Borçlanma',this)">Borçlanma</div>
+      <div class="chip" onclick="setChip('Para Piyasası',this)">Para Piyasası</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats">
+      <div class="stat"><div class="stat-lbl">Toplam Fon</div><div class="stat-val" id="s-total">—</div><div class="stat-sub">TEFAS platformu</div></div>
+      <div class="stat"><div class="stat-lbl">Gösterilen</div><div class="stat-val" id="s-showing">—</div><div class="stat-sub">Filtre sonucu</div></div>
+      <div class="stat"><div class="stat-lbl">En Yüksek 1Y</div><div class="stat-val green" id="s-best">—</div><div class="stat-sub" id="s-best-name">—</div></div>
+      <div class="stat"><div class="stat-lbl">Son Güncelleme</div><div class="stat-val" id="s-date" style="font-size:15px;">—</div><div class="stat-sub">TEFAS canlı</div></div>
+    </div>
+    <div id="main-content">
+      <div class="loading-box">
+        <div class="spinner"></div>
+        <div style="color:var(--text2);font-size:14px;">TEFAS verisi yükleniyor...</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ─── Config ───────────────────────────────────────────────────────────────────
+const CONFIG_KEY = "fonlor_api_url";
+
+function getApiUrl() {
+  return localStorage.getItem(CONFIG_KEY) || "";
+}
+function saveApiUrl() {
+  const val = document.getElementById("api-url-input").value.trim().replace(/\/$/, "");
+  if (!val.startsWith("http")) {
+    alert("Geçerli bir URL gir (https:// ile başlamalı)");
+    return;
+  }
+  localStorage.setItem(CONFIG_KEY, val);
+  document.getElementById("setup-modal").style.display = "none";
+  loadFunds();
+}
+function changeApiUrl() {
+  document.getElementById("api-url-input").value = getApiUrl();
+  document.getElementById("setup-modal").style.display = "flex";
+}
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let ALL_FUNDS = [];
+let curCat = "", curQ = "";
+let sortCol = "r1y", sortDir = "desc";
+
+const CAT_STYLE = {
+  "Hisse":        {bg:"rgba(123,110,246,.15)",c:"#9d93f8"},
+  "Katılım":      {bg:"rgba(79,209,197,.12)", c:"#4fd1c5"},
+  "Altın":        {bg:"rgba(246,173,85,.12)", c:"#f6ad55"},
+  "Borçlanma":    {bg:"rgba(62,207,142,.1)",  c:"#3ecf8e"},
+  "Para Piyasası":{bg:"rgba(139,92,246,.1)",  c:"#a78bfa"},
+  "Karma":        {bg:"rgba(245,101,101,.1)", c:"#f56565"},
+};
+
+function setStatus(state, text) {
+  document.getElementById("st-dot").className = "st-dot " + state;
+  document.getElementById("st-label").textContent = text;
+}
+
+// ─── Veri yükle ───────────────────────────────────────────────────────────────
+async function loadFunds() {
+  const api = getApiUrl();
+  if (!api) {
+    document.getElementById("setup-modal").style.display = "flex";
+    return;
+  }
+
+  setStatus("spin", "Bağlanıyor...");
+  document.getElementById("main-content").innerHTML = `
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <div style="color:var(--text2);font-size:14px;">TEFAS verisi çekiliyor...</div>
+      <div style="color:var(--text3);font-size:12px;margin-top:6px;">İlk yüklemede 5-10 saniye sürebilir</div>
+    </div>`;
+
+  try {
+    const res = await fetch(`${api}/api/funds`, { signal: AbortSignal.timeout(30000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    ALL_FUNDS = json.funds || [];
+
+    setStatus("ok", `${ALL_FUNDS.length} fon`);
+    document.getElementById("fund-count-sub").textContent = `TEFAS · ${ALL_FUNDS.length} fon`;
+    document.getElementById("s-total").textContent = ALL_FUNDS.length;
+
+    const t = json.updated_at ? new Date(json.updated_at).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"}) : "—";
+    document.getElementById("s-date").textContent = t;
+
+    render();
+  } catch (e) {
+    setStatus("err", "Bağlantı hatası");
+    document.getElementById("main-content").innerHTML = `
+      <div class="error-box">
+        <h3>API'ye bağlanılamadı</h3>
+        <p>Railway sunucusu henüz hazır olmayabilir ya da URL yanlış girilmiş olabilir.</p>
+        <p><strong>URL:</strong> <code>${getApiUrl()}</code></p>
+        <p style="margin-top:12px;">Kontrol listesi:</p>
+        <p>1. Railway deploy başarıyla tamamlandı mı?</p>
+        <p>2. URL'i doğru kopyaladın mı? (https:// ile başlamalı)</p>
+        <p>3. Railway servisinin "Active" durumda olduğunu kontrol et</p>
+        <br>
+        <button onclick="changeApiUrl()" style="background:var(--accent);border:none;border-radius:8px;padding:9px 18px;color:#fff;cursor:pointer;font-family:'DM Sans';font-size:13px;">URL'i Güncelle</button>
+        <button onclick="loadFunds()" style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 18px;color:var(--text2);cursor:pointer;font-family:'DM Sans';font-size:13px;margin-left:8px;">Tekrar Dene</button>
+      </div>`;
+  }
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function filtered() {
+  return ALL_FUNDS
+    .filter(f => !curCat || f.cat === curCat)
+    .filter(f => !curQ || f.code.toLowerCase().includes(curQ) || f.name.toLowerCase().includes(curQ))
+    .sort((a,b) => {
+      const va = a[sortCol] ?? -Infinity;
+      const vb = b[sortCol] ?? -Infinity;
+      return sortDir === "desc" ? vb-va : va-vb;
+    });
+}
+
+function render() {
+  const list = filtered();
+  document.getElementById("s-showing").textContent = list.length;
+
+  const top = [...ALL_FUNDS].sort((a,b)=>(b.r1y||0)-(a.r1y||0))[0];
+  if (top) {
+    document.getElementById("s-best").textContent = top.r1y ? `+%${top.r1y.toFixed(1)}` : "—";
+    document.getElementById("s-best-name").textContent = top.code;
+  }
+
+  if (!list.length) {
+    document.getElementById("main-content").innerHTML = `<div style="text-align:center;padding:60px;color:var(--text3);">Sonuç bulunamadı</div>`;
+    return;
+  }
+
+  const api = getApiUrl();
+  const rows = list.map(f => {
+    const cs = CAT_STYLE[f.cat] || {bg:"var(--bg4)",c:"var(--text2)"};
+    const fp = v => v==null ? `<span style="color:var(--text3)">—</span>`
+      : `<span class="pct" style="color:${v>=0?'var(--green)':'var(--red)'}">${v>=0?'+':''}%${v.toFixed(1)}</span>`;
+    const fa = v => {
+      if (!v) return "—";
+      if (v>=1e9) return "₺"+(v/1e9).toFixed(1)+"M";
+      if (v>=1e6) return "₺"+(v/1e6).toFixed(1)+"B";
+      return "₺"+v.toLocaleString("tr-TR");
+    };
+    return `<a class="fund-row" href="fon.html?kod=${f.code}&api=${encodeURIComponent(api)}">
+      <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+        <div class="f-av" style="background:${cs.bg};color:${cs.c}">${f.code.slice(0,2)}</div>
+        <div style="min-width:0;">
+          <div class="f-name">${f.name||f.code}</div>
+          <div class="f-code">${f.code}${f.katilim?' · <span style="color:var(--teal)">Katılım</span>':''}</div>
+        </div>
+      </div>
+      <div class="f-cell"><span class="cat-badge" style="background:${cs.bg};color:${cs.c}">${f.cat||"—"}</span></div>
+      <div class="f-cell">${fa(f.aum)}</div>
+      <div class="f-cell">${f.investors?f.investors.toLocaleString("tr-TR"):"—"}</div>
+      <div class="f-cell">${fp(f.r3m)}</div>
+      <div class="f-cell">${fp(f.r1y)}</div>
+      <div><button class="btn-d">Detay →</button></div>
+    </a>`;
+  }).join("");
+
+  const sc = col => `class="sortable${sortCol===col?' sort-'+sortDir:''}"`;
+  document.getElementById("main-content").innerHTML = `
+    <div class="tbl-wrap">
+      <div class="tbl-head">
+        <div>Fon</div>
+        <div style="text-align:right">Tür</div>
+        <div ${sc('aum')} style="text-align:right" onclick="setSort('aum')">Büyüklük</div>
+        <div ${sc('investors')} style="text-align:right" onclick="setSort('investors')">Yatırımcı</div>
+        <div ${sc('r3m')} style="text-align:right" onclick="setSort('r3m')">3 Ay</div>
+        <div ${sc('r1y')} style="text-align:right" onclick="setSort('r1y')">1 Yıl</div>
+        <div></div>
+      </div>
+      <div>${rows}</div>
+    </div>`;
+}
+
+function setFilter(cat, el) {
+  curCat = cat;
+  document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));
+  if(el) el.classList.add("active");
+  render();
+}
+function setChip(cat, el) {
+  curCat = cat;
+  document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
+  el.classList.add("on");
+  render();
+}
+function doSearch(v) { curQ = v.toLowerCase(); render(); }
+function setSort(col) {
+  sortDir = sortCol===col ? (sortDir==="desc"?"asc":"desc") : "desc";
+  sortCol = col;
+  render();
+}
+
+// ─── Başlat ───────────────────────────────────────────────────────────────────
+if (!getApiUrl()) {
+  document.getElementById("setup-modal").style.display = "flex";
+} else {
+  loadFunds();
+}
+setInterval(loadFunds, 300_000);
+</script>
+</body>
+</html>
