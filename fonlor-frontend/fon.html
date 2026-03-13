@@ -685,7 +685,7 @@ function selectPeriod(key, btnEl){
     const ys = new Date(now.getFullYear(),0,1);
     filtered = window._historyParsed.filter(r=>r.d >= ys);
   } else {
-    const days = {1H:7,1A:30,6A:180,1Y:365,3Y:365*3,5Y:365*5}[key]||365;
+    const days = {'1H':7,'1A':30,'6A':180,'1Y':365,'3Y':365*3,'5Y':365*5}[key]||365;
     const cutoff = new Date(now - days*86400000);
     filtered = window._historyParsed.filter(r=>r.d >= cutoff);
   }
