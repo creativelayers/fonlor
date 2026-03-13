@@ -534,14 +534,27 @@ function calcReturns(history, currentPrice){
   const yearStart = new Date(now.getFullYear(),0,1);
   const ytdBase = prices.find(r=>r.d >= yearStart)?.p || prices[0].p;
 
+  // Fintables gibi tam takvim tarihi bazlı hesapla
+  function exactMonthsAgo(n) {
+    const d = new Date(now); d.setMonth(d.getMonth()-n); return d;
+  }
+  function exactWeeksAgo(n) {
+    const d = new Date(now); d.setDate(d.getDate()-(n*7)); return d;
+  }
+  function priceAtDate(target) {
+    let best = prices[0];
+    for(const r of prices){ if(r.d <= target) best = r; }
+    return best.p;
+  }
+
   return {
-    r1h: pct(priceNDaysAgo(7)),
-    r1m: pct(priceNDaysAgo(30)),
-    r3m: pct(priceNDaysAgo(90)),
-    r6m: pct(priceNDaysAgo(180)),
-    r1y: pct(priceNDaysAgo(365)),
-    r3y: pct(priceNDaysAgo(365*3)),
-    r5y: pct(priceNDaysAgo(365*5)),
+    r1h: pct(priceAtDate(exactWeeksAgo(1))),
+    r1m: pct(priceAtDate(exactMonthsAgo(1))),
+    r3m: pct(priceAtDate(exactMonthsAgo(3))),
+    r6m: pct(priceAtDate(exactMonthsAgo(6))),
+    r1y: pct(priceAtDate(exactMonthsAgo(12))),
+    r3y: pct(priceAtDate(exactMonthsAgo(36))),
+    r5y: pct(priceAtDate(exactMonthsAgo(60))),
     ytd: pct(ytdBase),
   };
 }
@@ -921,19 +934,21 @@ async function loadFund(){
       catch(e) { return new Date(d.getFullYear()-n, d.getMonth(), d.getDate()-1); }
     }
     
-    // 6 ay öncesi: lastTradeDate'ten tam 180 gün önce
-    const d6ago = new Date(lastTradeDate); d6ago.setDate(d6ago.getDate()-180);
+    // Fintables gibi tam takvim tarihi: son işlem gününden N ay önce
+    function monthsBeforeDate(d, n) {
+      const r = new Date(d); r.setMonth(r.getMonth()-n); return r;
+    }
 
     const [ytdRows, y1Rows, y3Rows, y6Rows] = await Promise.all([
       tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(yearStart()), bittarih:lastTrade }).catch(()=>[]),
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,1)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,1)) }).catch(()=>[]),
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,3)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,3)) }).catch(()=>[]),
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(d6ago), bittarih:dateStr(d6ago) }).catch(()=>[]),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,12)), bittarih:dateStr(monthsBeforeDate(lastTradeDate,12)) }).catch(()=>[]),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,36)), bittarih:dateStr(monthsBeforeDate(lastTradeDate,36)) }).catch(()=>[]),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,6)), bittarih:dateStr(monthsBeforeDate(lastTradeDate,6)) }).catch(()=>[]),
     ]);
 
     // 5Y için ayrı sorgu (hata verirse boş dön)
     let y5Rows = [];
-    try { y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,5)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,5)) }); } catch(e) {}
+    try { y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,60)), bittarih:dateStr(monthsBeforeDate(lastTradeDate,60)) }); } catch(e) {}
 
     // Getiri hesapla
     function periodReturn(rows, code) {
@@ -983,8 +998,14 @@ async function loadFund(){
 
   } catch(err) {
     console.error('Load error:', err);
-    document.getElementById('hero-name').textContent = 'Veri yüklenemedi: ' + FUND_CODE;
-    document.getElementById('hero-price').textContent = '—';
+    // Proxy ilk istekte fail olabilir - 3 saniye sonra tekrar dene
+    if (!window._loadRetried) {
+      window._loadRetried = true;
+      setTimeout(loadFund, 3000);
+    } else {
+      document.getElementById('hero-name').textContent = 'Veri yüklenemedi: ' + FUND_CODE;
+      document.getElementById('hero-price').textContent = '—';
+    }
   }
 }
 
