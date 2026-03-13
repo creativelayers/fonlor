@@ -922,13 +922,14 @@ async function loadFund(){
     }
     
     const [ytdRows, y1Rows, y3Rows] = await Promise.all([
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(yearStart()), bittarih:lastTrade }),
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,1)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,1)) }),
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,3)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,3)) }),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(yearStart()), bittarih:lastTrade }).catch(()=>[]),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,1)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,1)) }).catch(()=>[]),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,3)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,3)) }).catch(()=>[]),
     ]);
 
-    // 5Y için ayrı sorgu
-    const y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,5)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,5)) });
+    // 5Y için ayrı sorgu (hata verirse boş dön)
+    let y5Rows = [];
+    try { y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,5)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,5)) }); } catch(e) {}
 
     // Getiri hesapla
     function periodReturn(rows, code) {
