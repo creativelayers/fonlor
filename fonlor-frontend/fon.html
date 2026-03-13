@@ -346,399 +346,461 @@
 </div>
 
 <script>
-const FUND_DB = {
-  AFT:{
-    code:'AFT', name:'AK Portföy Teknoloji Yabancı Hisse Senedi Fonu', cat:'Hisse', katilim:false,
-    price:2.847, change:1.23, isin:'TRA0K0610926', kurucu:'AK Portföy Yönetimi A.Ş.',
-    aum:'₺4.23M', investors:18492, alis:'T+1', satis:'T+2', risk:4, yonetim:'%1.80',
-    stopaj:'%0 (Hisse yoğun)', giris:'%0', cikis:'%0', minAlis:'1 pay', maxAlis:'Sınırsız',
-    r1h:-0.3, r1g:1.23, r1m:4.2, r3m:11.7, r6m:-2.1, r1y:24.3, r3y:87.4, r5y:142.1, rytd:8.7,
-    strateji:'Fon toplam değerinin en az %80\'i devamlı olarak yabancı teknoloji şirketlerinin hisse senetlerine yatırılır. Apple, Microsoft, Nvidia, Amazon gibi küresel teknoloji devleri portföyde ağırlıklı yer tutar.',
-    positions:[
-      {t:'THYAO',n:'Türk Hava Yolları',sek:'Havacılık',p:14.2,prev:8.0,c:'rgba(123,110,246,.2)',tc:'#9d93f8'},
-      {t:'EREGL',n:'Ereğli Demir Çelik',sek:'Demir-Çelik',p:11.8,prev:11.2,c:'rgba(62,207,142,.15)',tc:'#3ecf8e'},
-      {t:'ASELS',n:'Aselsan Elektronik',sek:'Savunma',p:9.4,prev:9.4,c:'rgba(246,173,85,.15)',tc:'#f6ad55'},
-      {t:'KCHOL',n:'Koç Holding',sek:'Holding',p:8.1,prev:7.5,c:'rgba(79,209,197,.15)',tc:'#4fd1c5'},
-      {t:'SASA',n:'Sasa Polyester',sek:'Kimya',p:7.3,prev:8.1,c:'rgba(245,101,101,.15)',tc:'#f56565'},
-      {t:'SAHOL',n:'Sabancı Holding',sek:'Holding',p:6.8,prev:7.0,c:'rgba(139,92,246,.15)',tc:'#a78bfa'},
-      {t:'BIMAS',n:'BİM Mağazalar',sek:'Perakende',p:5.2,prev:4.8,c:'rgba(246,173,85,.15)',tc:'#f6ad55'},
-    ],
-    dagilim:[{lbl:'Hisse Senedi',pct:92.4,c:'#7b6ef6'},{lbl:'Nakit (TL)',pct:5.1,c:'#3ecf8e'},{lbl:'Repo',pct:2.5,c:'#f6ad55'}],
-    sektor:[{lbl:'Havacılık',pct:14.2},{lbl:'Demir-Çelik',pct:11.8},{lbl:'Savunma',pct:9.4},{lbl:'Holding',pct:14.9},{lbl:'Kimya',pct:7.3},{lbl:'Perakende',pct:5.2},{lbl:'Diğer',pct:37.2}],
-    aiSummary:'AK Portföy AFT, son çeyrekte THYAO ağırlığını %8\'den %14.2\'ye çıkardı — bu önemli bir yönetici kararı. Portföyde havacılık ve savunma sektörü birlikte %24 ağırlığa ulaşmış durumda. İlk 3 hissenin portföy içindeki payı %35.4 ile yoğunlaşma sınırına yaklaşıyor.',
-    signals:[
-      {c:'var(--amber)',t:'Pozisyon değişimi: THYAO +%6.2 son çeyrekte — yönetici güçlü alım yaptı'},
-      {c:'var(--red)',t:'Yoğunlaşma uyarısı: İlk 3 hisse portföyün %35.4\'ü'},
-      {c:'var(--green)',t:'Yatırımcı sayısı +%12 artış — kurumsal ilgi yükseliyor'},
-      {c:'var(--green)',t:'Hisse yoğun fon: Stopaj avantajı var (%0)'},
-    ],
-    kapNews:[
-      {title:'AFT — Portföy Yapısı Değişiklik Bildirimi', date:'6 Mart 2026', tur:'Portföy'},
-      {title:'AK Portföy — Fon İçtüzüğü Güncelleme', date:'15 Şubat 2026', tur:'İçtüzük'},
-      {title:'AFT — Aylık Portföy Raporu Ocak 2026', date:'5 Şubat 2026', tur:'Aylık Rapor'},
-      {title:'AK Portföy — Yönetici Değişikliği Bildirimi', date:'10 Ocak 2026', tur:'Yönetim'},
-      {title:'AFT — Portföy Yapısı Değişiklik Bildirimi', date:'6 Aralık 2025', tur:'Portföy'},
-    ],
-    perf:[
-      {donem:'Son 1 Hafta',fon:'+%0.8',bist:'+%1.2',fark:'-0.4',kat:'+%0.6'},
-      {donem:'Son 1 Ay',fon:'+%4.2',bist:'+%3.8',fark:'+0.4',kat:'+%3.1'},
-      {donem:'Son 3 Ay',fon:'+%11.7',bist:'+%9.4',fark:'+2.3',kat:'+%8.9'},
-      {donem:'Son 6 Ay',fon:'-%2.1',bist:'-%4.2',fark:'+2.1',kat:'-%3.8'},
-      {donem:'Yılbaşı',fon:'+%8.7',bist:'+%7.1',fark:'+1.6',kat:'+%6.8'},
-      {donem:'Son 1 Yıl',fon:'+%24.3',bist:'+%18.7',fark:'+5.6',kat:'+%19.2'},
-      {donem:'Son 3 Yıl',fon:'+%87.4',bist:'+%72.1',fark:'+15.3',kat:'+%68.4'},
-    ],
-    benzer:[
-      {code:'GAB',name:'Garanti Portföy Birinci',r1y:31.2,c:'rgba(62,207,142,.15)',tc:'#3ecf8e'},
-      {code:'IPH',name:'İş Portföy Hisse',r1y:38.7,c:'rgba(246,173,85,.15)',tc:'#f6ad55'},
-      {code:'KH1',name:'AK Portföy Katılım Hisse',r1y:22.4,c:'rgba(79,209,197,.15)',tc:'#4fd1c5'},
-    ],
-  },
-  GAB:{
-    code:'GAB', name:'Garanti Portföy Birinci Değişken Fon', cat:'Hisse', katilim:false,
-    price:18.234, change:-0.45, isin:'TRA0G0210918', kurucu:'Garanti Portföy Yönetimi A.Ş.',
-    aum:'₺12.8M', investors:42310, alis:'T+1', satis:'T+2', risk:5, yonetim:'%2.10',
-    stopaj:'%0 (Hisse yoğun)', giris:'%0', cikis:'%0', minAlis:'1 pay', maxAlis:'Sınırsız',
-    r1h:0.1, r1g:-0.45, r1m:2.1, r3m:8.4, r6m:5.7, r1y:31.2, r3y:104.3, r5y:198.7, rytd:6.2,
-    strateji:'Türk hisse senetleri ve borçlanma araçlarına karma yatırım yapan değişken fon. Bankacılık ve sanayi ağırlıklı portföy yönetimi benimsenmektedir.',
-    positions:[
-      {t:'GARAN',n:'Garanti Bankası',sek:'Bankacılık',p:18.5,prev:21.5,c:'rgba(62,207,142,.2)',tc:'#3ecf8e'},
-      {t:'THYAO',n:'Türk Hava Yolları',sek:'Havacılık',p:12.1,prev:10.8,c:'rgba(123,110,246,.2)',tc:'#9d93f8'},
-      {t:'ASELS',n:'Aselsan',sek:'Savunma',p:10.2,prev:9.9,c:'rgba(246,173,85,.15)',tc:'#f6ad55'},
-      {t:'TUPRS',n:'Tüpraş',sek:'Enerji',p:9.8,prev:10.1,c:'rgba(245,101,101,.15)',tc:'#f56565'},
-      {t:'EREGL',n:'Ereğli Demir Çelik',sek:'Demir-Çelik',p:8.4,prev:8.0,c:'rgba(79,209,197,.15)',tc:'#4fd1c5'},
-      {t:'AKBNK',n:'Akbank',sek:'Bankacılık',p:7.1,prev:7.8,c:'rgba(139,92,246,.15)',tc:'#a78bfa'},
-    ],
-    dagilim:[{lbl:'Hisse Senedi',pct:88.1,c:'#7b6ef6'},{lbl:'Devlet Tahvili',pct:7.2,c:'#3ecf8e'},{lbl:'Nakit',pct:4.7,c:'#f6ad55'}],
-    sektor:[{lbl:'Bankacılık',pct:25.6},{lbl:'Havacılık',pct:12.1},{lbl:'Savunma',pct:10.2},{lbl:'Enerji',pct:9.8},{lbl:'Demir-Çelik',pct:8.4},{lbl:'Diğer',pct:33.9}],
-    aiSummary:'Garanti Portföy GAB, bankacılık sektörü ağırlığını son çeyrekte %21.5\'ten %18.5\'e indirdi — sektör rotasyonu sinyali. Yatırımcı sayısı 42K ile platformun en büyük fonlarından biri. 3 yıllık %104 getiri dikkat çekici.',
-    signals:[
-      {c:'var(--green)',t:'42.3K yatırımcı — platform genelinde ilk 10\'da'},
-      {c:'var(--amber)',t:'GARAN ağırlığı düşürüldü: %21.5 → %18.5'},
-      {c:'var(--green)',t:'3Y getiri %104 — güçlü uzun vadeli performans'},
-    ],
-    kapNews:[
-      {title:'GAB — Portföy Yapısı Değişiklik Bildirimi', date:'6 Mart 2026', tur:'Portföy'},
-      {title:'Garanti Portföy — Fon Karşılaştırma Raporu', date:'1 Mart 2026', tur:'Rapor'},
-      {title:'GAB — Aylık Portföy Raporu Ocak 2026', date:'5 Şubat 2026', tur:'Aylık Rapor'},
-    ],
-    perf:[
-      {donem:'Son 1 Ay',fon:'+%2.1',bist:'+%3.8',fark:'-1.7',kat:'+%3.1'},
-      {donem:'Son 3 Ay',fon:'+%8.4',bist:'+%9.4',fark:'-1.0',kat:'+%8.9'},
-      {donem:'Son 1 Yıl',fon:'+%31.2',bist:'+%18.7',fark:'+12.5',kat:'+%19.2'},
-      {donem:'Son 3 Yıl',fon:'+%104.3',bist:'+%72.1',fark:'+32.2',kat:'+%68.4'},
-    ],
-    benzer:[
-      {code:'AFT',name:'AK Portföy Teknoloji',r1y:24.3,c:'rgba(123,110,246,.15)',tc:'#9d93f8'},
-      {code:'IPH',name:'İş Portföy Hisse',r1y:38.7,c:'rgba(246,173,85,.15)',tc:'#f6ad55'},
-    ],
-  },
-  GAIA:{
-    code:'GAIA', name:'Garanti Portföy Altın Fonu', cat:'Altın', katilim:false,
-    price:7.891, change:3.24, isin:'TRA0G0310924', kurucu:'Garanti Portföy Yönetimi A.Ş.',
-    aum:'₺6.7M', investors:24183, alis:'T+1', satis:'T+2', risk:4, yonetim:'%1.20',
-    stopaj:'%10', giris:'%0', cikis:'%0', minAlis:'1 pay', maxAlis:'Sınırsız',
-    r1h:0.8, r1g:3.24, r1m:8.4, r3m:22.1, r6m:31.4, r1y:94.2, r3y:241.3, r5y:387.2, rytd:18.3,
-    strateji:'Fon toplam değerinin en az %80\'i devamlı olarak borsada işlem gören altın ve altına dayalı sermaye piyasası araçlarına yatırılır.',
-    positions:[
-      {t:'Fiziksel Altın',n:'XAU/TRY Spot',sek:'Altın',p:94.2,prev:91.8,c:'rgba(246,173,85,.25)',tc:'#f6ad55'},
-      {t:'Altın Vadeli',n:'BIST Futures',sek:'Türev',p:4.1,prev:5.2,c:'rgba(246,173,85,.15)',tc:'#f6ad55'},
-      {t:'Nakit',n:'TL',sek:'Nakit',p:1.7,prev:3.0,c:'rgba(62,207,142,.1)',tc:'#3ecf8e'},
-    ],
-    dagilim:[{lbl:'Fiziksel Altın',pct:94.2,c:'#f6ad55'},{lbl:'Vadeli',pct:4.1,c:'#f59f3a'},{lbl:'Nakit',pct:1.7,c:'#3ecf8e'}],
-    sektor:[{lbl:'Kıymetli Maden',pct:98.3},{lbl:'Nakit',pct:1.7}],
-    aiSummary:'GAIA bu yılın açık ara en iyi performanslı fonlarından biri: %94.2 getiri. Altın fiyatlarının TL bazında güçlü yükselişi doğrudan etkili. Yatırımcı sayısı son 3 ayda %34 arttı.',
-    signals:[
-      {c:'var(--green)',t:'1Y getiri %94.2 — platform lideri'},
-      {c:'var(--green)',t:'Son 3 ayda yatırımcı +%34 büyüme'},
-      {c:'var(--amber)',t:'Altın fiyatı volatilitesi kısa vadede yüksek'},
-    ],
-    kapNews:[
-      {title:'GAIA — Aylık Portföy Raporu Ocak 2026', date:'5 Şubat 2026', tur:'Aylık Rapor'},
-      {title:'Garanti Portföy — Altın Fonu Strateji Notu', date:'12 Ocak 2026', tur:'Strateji'},
-    ],
-    perf:[
-      {donem:'Son 1 Ay',fon:'+%8.4',bist:'+%3.8',fark:'+4.6',kat:'+%7.1'},
-      {donem:'Son 3 Ay',fon:'+%22.1',bist:'+%9.4',fark:'+12.7',kat:'+%19.3'},
-      {donem:'Son 1 Yıl',fon:'+%94.2',bist:'+%18.7',fark:'+75.5',kat:'+%82.4'},
-    ],
-    benzer:[
-      {code:'KH1',name:'AK Portföy Katılım Hisse',r1y:22.4,c:'rgba(79,209,197,.15)',tc:'#4fd1c5'},
-      {code:'AKK',name:'AK Portföy Katılım Değişken',r1y:18.7,c:'rgba(123,110,246,.15)',tc:'#9d93f8'},
-    ],
-  },
-};
+const API = 'https://creativelayers.net/fonlor-api/api';
+const FREE_LIMIT = 5;
 
-// Default fallback
-const DEFAULT_FUND = FUND_DB['AFT'];
+// URL'den fon kodunu al
+const urlParams = new URLSearchParams(location.search);
+const FUND_CODE = (urlParams.get('kod') || 'AFT').toUpperCase();
 
-function getFund(){
-  const p=new URLSearchParams(location.search);
-  const kod=p.get('kod')||'AFT';
-  return FUND_DB[kod]||DEFAULT_FUND;
-}
-
-const F=getFund();
-
-// Breadcrumb & title
-document.title=`${F.code} — Fonlor`;
-document.getElementById('bc-code').textContent=F.code;
-
-// Hero
-const cc={
-  'Hisse':{bg:'rgba(123,110,246,.2)',c:'#9d93f8'},
-  'Katılım':{bg:'rgba(79,209,197,.15)',c:'#4fd1c5'},
-  'Altın':{bg:'rgba(246,173,85,.2)',c:'#f6ad55'},
-  'Borçlanma':{bg:'rgba(62,207,142,.12)',c:'#3ecf8e'},
-  'Para Piyasası':{bg:'rgba(139,92,246,.12)',c:'#a78bfa'},
-}[F.cat]||{bg:'var(--bg4)',c:'var(--text2)'};
-
-const av=document.getElementById('hero-av');
-av.style.background=cc.bg; av.style.color=cc.c;
-av.textContent=F.code.slice(0,2);
-
-document.getElementById('hero-name').textContent=F.name;
-
-const meta=document.getElementById('hero-meta');
-meta.innerHTML=`
-  <span class="meta-badge" style="background:${cc.bg};color:${cc.c};">${F.cat}</span>
-  <span class="meta-badge" style="background:var(--bg3);color:var(--text3);">${F.code}</span>
-  ${F.katilim?'<span class="meta-badge" style="background:rgba(79,209,197,.12);color:var(--teal);">Katılım Fonu</span>':'<span class="meta-badge" style="background:var(--bg3);color:var(--text3);">Konvansiyonel</span>'}
-  <span class="meta-badge" style="background:var(--bg3);color:var(--text3);">Risk: ${F.risk}/7</span>
-  <span class="meta-badge" style="background:var(--bg3);color:var(--text3);">Stopaj: ${F.stopaj}</span>
-`;
-
-document.getElementById('hero-price').textContent='₺'+F.price.toLocaleString('tr-TR',{minimumFractionDigits:3});
-const hc=document.getElementById('hero-change');
-hc.style.color=F.change>=0?'var(--green)':'var(--red)';
-hc.textContent=(F.change>=0?'+':'')+F.change+'% bugün';
-
-// Getiri row
-const periods=[
-  {lbl:'Bugün',val:F.r1g},{lbl:'1 Ay',val:F.r1m},{lbl:'3 Ay',val:F.r3m},
-  {lbl:'6 Ay',val:F.r6m},{lbl:'YTD',val:F.rytd},{lbl:'1 Yıl',val:F.r1y},{lbl:'3 Yıl',val:F.r3y},
+// Renk paleti — fon koduna göre deterministik renk
+const PALETTES = [
+  {bg:'rgba(123,110,246,.2)',tc:'#9d93f8'},
+  {bg:'rgba(62,207,142,.15)',tc:'#3ecf8e'},
+  {bg:'rgba(246,173,85,.15)',tc:'#f6ad55'},
+  {bg:'rgba(79,209,197,.15)',tc:'#4fd1c5'},
+  {bg:'rgba(245,101,101,.15)',tc:'#f56565'},
+  {bg:'rgba(139,92,246,.15)',tc:'#a78bfa'},
+  {bg:'rgba(248,113,113,.15)',tc:'#fc8181'},
 ];
-document.getElementById('getiri-row').innerHTML=periods.map(p=>`
-  <div class="getiri-cell">
-    <div class="getiri-lbl">${p.lbl}</div>
-    <div class="getiri-val" style="color:${p.val>=0?'var(--green)':'var(--red)'}">${p.val>=0?'+':''}%${p.val}</div>
-  </div>`).join('');
-
-// Tab switching
-function setTab(id, el){
-  document.querySelectorAll('.tabcontent').forEach(e=>e.classList.remove('on'));
-  document.getElementById('tab-'+id).classList.add('on');
-  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('on'));
-  if(el) el.classList.add('on');
+function fundColor(code){
+  let h=0; for(let c of code) h=(h*31+c.charCodeAt(0))%PALETTES.length;
+  return PALETTES[h];
 }
 
-// Info grid
-document.getElementById('info-grid').innerHTML=[
-  {l:'Kurucu Şirket',v:F.kurucu},{l:'ISIN Kodu',v:F.isin},
-  {l:'Fon Büyüklüğü',v:F.aum},{l:'Yatırımcı Sayısı',v:F.investors.toLocaleString('tr-TR')+' kişi'},
-  {l:'Alış Valörü',v:F.alis,cls:'teal'},{l:'Satış Valörü',v:F.satis,cls:'teal'},
-  {l:'Risk Seviyesi',v:F.risk+' / 7',cls:'amber'},{l:'Yönetim Ücreti',v:F.yonetim+' / yıl'},
-  {l:'Giriş Komisyonu',v:F.giris,cls:'green'},{l:'Çıkış Komisyonu',v:F.cikis,cls:'green'},
-  {l:'Min. Alış',v:F.minAlis},{l:'Max. Alış',v:F.maxAlis},
-].map(x=>`<div class="info-item"><div class="info-lbl">${x.l}</div><div class="info-val ${x.cls||''}">${x.v}</div></div>`).join('');
+// ---- Loading state ----
+function showLoading(){
+  document.getElementById('hero-name').textContent = 'Yükleniyor...';
+  document.getElementById('hero-price').textContent = '—';
+}
 
-// Fund strategy
-const pgBody=document.querySelector('#tab-genel');
-const stratCard=document.createElement('div');
-stratCard.className='card';
-stratCard.innerHTML=`<div class="card-header"><div class="card-title">Yatırım Stratejisi</div></div><div class="card-body"><p style="font-size:13px;color:var(--text2);line-height:1.8;">${F.strateji}</p></div>`;
-document.getElementById('tab-genel').appendChild(stratCard);
+// ---- Format helpers ----
+function fmt(n, dec=2){ return n!=null&&!isNaN(n) ? parseFloat(n).toFixed(dec) : '—'; }
+function fmtBig(n){
+  if(n==null||isNaN(n)) return '—';
+  n = parseFloat(n);
+  if(n>=1e9) return '₺'+(n/1e9).toFixed(1)+'Mr';
+  if(n>=1e6) return '₺'+(n/1e6).toFixed(1)+'M';
+  if(n>=1e3) return '₺'+(n/1e3).toFixed(0)+'B';
+  return '₺'+n.toFixed(0);
+}
+function chgClass(v){ return v>0?'color:var(--green)':v<0?'color:var(--red)':'color:var(--text2)'; }
+function chgSign(v){ return v>0?'+'+fmt(v)+'%':v<0?fmt(v)+'%':'—'; }
 
-// Positions helper
-function posHTML(pos, limit, showLock){
-  let html=pos.slice(0,limit).map(p=>{
-    const diff=p.p-p.prev;
-    const diffStr=diff>0?`<span style="color:var(--green);font-size:11px">+${diff.toFixed(1)}%</span>`:diff<0?`<span style="color:var(--red);font-size:11px">${diff.toFixed(1)}%</span>`:`<span style="color:var(--text3);font-size:11px">—</span>`;
-    const w=Math.min(100,p.p*4);
-    return`<div class="pos-row">
-      <div class="pos-av" style="background:${p.c};color:${p.tc};">${p.t.slice(0,3)}</div>
-      <div style="min-width:0;flex-shrink:0;width:110px;"><div class="pos-name">${p.t}</div><div class="pos-sub">${p.n}</div></div>
-      <div style="font-size:11px;color:var(--text3);min-width:70px;">${p.sek}</div>
-      <div class="pos-bar-wrap"><div class="pos-bar" style="width:${w}%;background:${p.tc};"></div></div>
-      <div class="pos-pct">%${p.p}</div>
-      <div class="pos-chg">${diffStr}</div>
+// ---- Render helpers ----
+function renderHero(f, history){
+  const col = fundColor(FUND_CODE);
+  const price = parseFloat(f.FIYAT||f.fiyat||0);
+  
+  // Günlük değişim: history son 2 günden hesapla
+  let change = 0;
+  if(history && history.length>=2){
+    const prev = parseFloat(history[history.length-2]?.FIYAT||0);
+    if(prev) change = ((price-prev)/prev)*100;
+  }
+
+  document.getElementById('bc-code').textContent = FUND_CODE;
+  document.title = FUND_CODE + ' — Fonlor';
+
+  const av = document.getElementById('hero-av');
+  av.style.background = col.bg;
+  av.style.color = col.tc;
+  av.textContent = FUND_CODE.slice(0,2);
+
+  document.getElementById('hero-name').textContent = f.FONUNVAN || f.fonunvan || FUND_CODE;
+  document.getElementById('hero-price').textContent = '₺' + fmt(price,3);
+
+  const chg = document.getElementById('hero-change');
+  chg.innerHTML = `<span style="${chgClass(change)}">${change>=0?'+':''}${fmt(change)}% bugün</span>`;
+
+  // Meta badges
+  document.getElementById('hero-meta').innerHTML = `
+    <span class="meta-badge" style="background:var(--bg3);color:var(--text3);">${FUND_CODE}</span>
+    <span class="meta-badge" style="background:var(--bg3);color:var(--text2);">Fon</span>
+    <span class="meta-badge" style="background:var(--bg3);color:var(--text3);">TEFAS</span>`;
+
+  // Getiri satırı
+  const returns = calcReturns(history, price);
+  document.getElementById('getiri-row').innerHTML = [
+    ['1H', returns.r1m],
+    ['3H', returns.r3m],
+    ['6H', returns.r6m],
+    ['YTD', returns.ytd],
+    ['1Y', returns.r1y],
+    ['AUM', null, fmtBig(f.PORTFOYBUYUKLUK||f.portfoybuyukluk)],
+    ['Yatırımcı', null, parseInt(f.KISISAYISI||f.kisisayisi||0).toLocaleString('tr-TR')],
+  ].map(([lbl,val,raw])=>{
+    const display = raw ?? (val!=null ? `<span style="${chgClass(val)}">${chgSign(val)}</span>` : '—');
+    return `<div class="getiri-cell"><div class="getiri-lbl">${lbl}</div><div class="getiri-val">${display}</div></div>`;
+  }).join('');
+}
+
+function calcReturns(history, currentPrice){
+  if(!history||history.length<2) return {};
+  const prices = history.map(r=>({
+    date: new Date(parseInt(r.TARIH||r.tarih)),
+    price: parseFloat(r.FIYAT||r.fiyat||0)
+  })).filter(r=>r.price>0).sort((a,b)=>a.date-b.date);
+  if(!prices.length) return {};
+  const now = new Date();
+  const lp = currentPrice || prices[prices.length-1].price;
+  function priceNDaysAgo(n){
+    const target = new Date(now - n*86400000);
+    let best = prices[0];
+    for(const p of prices){ if(p.date<=target) best=p; }
+    return best.price;
+  }
+  function pct(old){ return old ? ((lp-old)/old)*100 : null; }
+  const yearStart = new Date(now.getFullYear(),0,1);
+  const ytdBase = prices.find(p=>p.date>=yearStart)?.price || prices[0].price;
+  return {
+    r1m: pct(priceNDaysAgo(30)),
+    r3m: pct(priceNDaysAgo(90)),
+    r6m: pct(priceNDaysAgo(180)),
+    r1y: pct(priceNDaysAgo(365)),
+    ytd: pct(ytdBase),
+  };
+}
+
+function renderInfoGrid(f){
+  const aum = fmtBig(f.PORTFOYBUYUKLUK||f.portfoybuyukluk);
+  const investors = parseInt(f.KISISAYISI||f.kisisayisi||0).toLocaleString('tr-TR');
+  const shares = parseInt(f.TEDPAYSAYISI||f.tedpaysayisi||0).toLocaleString('tr-TR');
+  const borsaFiyat = f.BORSABULTENFIYAT||f.borsabultenfiyat;
+  document.getElementById('info-grid').innerHTML = [
+    ['Fon Büyüklüğü', aum, 'teal'],
+    ['Yatırımcı Sayısı', investors, 'green'],
+    ['Tedavüldeki Pay', shares, ''],
+    ['Borsa Fiyatı', borsaFiyat&&borsaFiyat!=='-'?'₺'+fmt(borsaFiyat,3):'—', ''],
+    ['Fon Kodu', FUND_CODE, ''],
+    ['Veri Tarihi', formatDate(f.TARIH||f.tarih), ''],
+  ].map(([l,v,cls])=>`
+    <div class="info-item">
+      <div class="info-lbl">${l}</div>
+      <div class="info-val ${cls}">${v}</div>
+    </div>`).join('');
+}
+
+function formatDate(ts){
+  if(!ts) return '—';
+  try{
+    const d = new Date(parseInt(ts));
+    return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'});
+  }catch{ return '—'; }
+}
+
+function renderPositions(portfolio, containerId, limit){
+  const el = document.getElementById(containerId);
+  if(!portfolio||!portfolio.length){
+    el.innerHTML = '<p style="color:var(--text3);font-size:13px;padding:8px 0;">Portföy verisi bulunamadı.</p>';
+    return;
+  }
+  const sorted = [...portfolio].sort((a,b)=>parseFloat(b.PORTAYPAYORAN||0)-parseFloat(a.PORTAYPAYORAN||0));
+  const show = limit ? sorted.slice(0,limit) : sorted;
+  const max = parseFloat(show[0]?.PORTAYPAYORAN||1);
+  const col = fundColor(FUND_CODE);
+
+  const html = show.map((p,i)=>{
+    const pct = parseFloat(p.PORTAYPAYORAN||0)*100;
+    const name = p.HISSE_ADI||p.VARLIKADI||p.PORTFOYADI||'—';
+    const ticker = p.HISSEKODU||p.VARLIK||'';
+    return `<div class="pos-row">
+      <div class="pos-av" style="background:${col.bg};color:${col.tc};">${(ticker||name).slice(0,3)}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="pos-name">${ticker||name}</div>
+        <div class="pos-sub">${ticker?name:''}</div>
+      </div>
+      <div class="pos-bar-wrap"><div class="pos-bar" style="background:${col.tc};width:${Math.min(100,(pct/max)*100)}%;"></div></div>
+      <div class="pos-pct" style="${chgClass(0.1)}">%${fmt(pct,2)}</div>
     </div>`;
   }).join('');
-  if(showLock && pos.length>limit){
-    const locked=pos.slice(limit);
-    html+=locked.map(()=>`<div class="lock-row"><div class="lock-av"></div><div style="flex:1;"><div class="skel" style="width:80px;margin-bottom:5px;"></div><div class="skel" style="width:55px;"></div></div><div style="color:var(--text3);font-size:12px;margin-left:auto;">🔒</div></div>`).join('');
-    html+=`<div class="upgrade-box"><p>Bu fonda <strong>${locked.length} pozisyon daha</strong> gizli. Premium ile tüm pozisyonları, aylık değişimleri ve sektör dağılımını gör.</p><button class="btn-solid">79₺/ay</button></div>`;
-  }
-  return html;
+
+  const lockHtml = (limit && sorted.length>limit) ? `
+    ${sorted.slice(limit,limit+3).map(()=>`
+      <div class="lock-row">
+        <div class="lock-av"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+          <div class="skel" style="width:60%;"></div>
+          <div class="skel" style="width:40%;"></div>
+        </div>
+        <div style="font-size:18px;color:var(--text3);">🔒</div>
+      </div>`).join('')}
+    <div class="upgrade-box">
+      <div>🔒</div>
+      <p>Bu fonda <strong>${sorted.length} pozisyon</strong> var. Premium ile tüm portföyü gör.</p>
+      <button class="btn-solid" onclick="alert('Premium yakında!')">79₺/ay</button>
+    </div>` : '';
+
+  el.innerHTML = html + lockHtml;
+  
+  // Tarih güncelle
+  const dateEl = document.getElementById(containerId==='mini-positions'?'pos-date':'pos-date2');
+  if(dateEl&&portfolio[0]) dateEl.textContent = formatDate(portfolio[0].TARIH||portfolio[0].tarih);
 }
 
-const pd=`Mayıs 2025 · ${F.positions.length} pozisyon`;
-document.getElementById('pos-date').textContent=pd;
-document.getElementById('pos-date2').textContent=pd;
-document.getElementById('mini-positions').innerHTML=posHTML(F.positions,3,true);
-document.getElementById('full-positions').innerHTML=posHTML(F.positions,F.positions.length,false)
-  +(F.positions.length>2?`<div class="upgrade-box"><p>Geçmiş aylara ait pozisyon değişimlerini görmek ve pozisyon bildirim alarmı kurmak için <strong>Premium</strong> gereklidir.</p><button class="btn-solid">79₺/ay</button></div>`:'');
-
-// Getiri tablosu
-document.getElementById('perf-tbody').innerHTML=F.perf.map(r=>{
-  const fv=parseFloat(r.fon);
-  const dv=parseFloat(r.fark);
-  return`<tr>
-    <td style="color:var(--text)">${r.donem}</td>
-    <td style="color:${fv>=0?'var(--green)':'var(--red)'};font-weight:500;">${r.fon}</td>
-    <td style="color:var(--text2)">${r.bist}</td>
-    <td style="color:${dv>=0?'var(--green)':'var(--red)'}">${dv>=0?'+':''}${r.fark}%</td>
-    <td style="color:var(--text2)">${r.kat}</td>
-  </tr>`;
-}).join('');
-
-// Dağılım pasta
-new Chart(document.getElementById('pieChart'),{
-  type:'doughnut',
-  data:{
-    labels:F.dagilim.map(d=>d.lbl),
-    datasets:[{data:F.dagilim.map(d=>d.pct),backgroundColor:F.dagilim.map(d=>d.c),borderWidth:0,borderRadius:4}]
-  },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: %${c.raw}`}}}}
-});
-document.getElementById('pie-legend').innerHTML=F.dagilim.map(d=>`
-  <div class="pie-leg-row">
-    <div class="pie-dot" style="background:${d.c}"></div>
-    <div style="flex:1;font-size:13px;">${d.lbl}</div>
-    <div style="font-weight:500;font-size:13px;">%${d.pct}</div>
-  </div>`).join('');
-
-// Sektör barları
-document.getElementById('sector-bars').innerHTML=F.sektor.map(s=>`
-  <div style="margin-bottom:12px;">
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-      <span style="font-size:12px;color:var(--text2);">${s.lbl}</span>
-      <span style="font-size:12px;font-weight:500;">%${s.pct}</span>
-    </div>
-    <div style="height:5px;background:var(--bg4);border-radius:3px;">
-      <div style="height:5px;border-radius:3px;background:var(--accent);width:${s.pct}%;transition:width .6s;"></div>
-    </div>
-  </div>`).join('');
-
-// AI
-document.getElementById('ai-summary-box').innerHTML=`
-  <div class="ai-hdr"><div class="ai-dot"></div><div class="ai-lbl">AI Özeti — Mayıs 2025</div></div>
-  <div class="ai-txt">${F.aiSummary}</div>`;
-document.getElementById('ai-signals').innerHTML=F.signals.map(s=>`
-  <div class="signal-row">
-    <div class="sig-dot" style="background:${s.c}"></div>
-    <div style="font-size:13px;color:var(--text2);line-height:1.6;">${s.t}</div>
-  </div>`).join('');
-
-function askAI(){
-  const q=document.getElementById('aiQ').value.trim();
-  if(!q)return;
-  const ans=document.getElementById('ai-answer');
-  ans.style.display='block';
-  ans.innerHTML='<span style="color:var(--text3)">Yanıt hazırlanıyor...</span>';
-  const replies={
-    'avantaj':`${F.code} fonunun avantajları: Stopaj durumu (${F.stopaj}), düşük yönetim ücreti (%1.80/yıl), ve ${F.investors.toLocaleString('tr-TR')} yatırımcıyla yüksek likidite. Ayrıca 1 yıllık ${F.r1y}% getirisi ile kategori ortalamasının üstünde performans.`,
-    'risk':`${F.code} için risk seviyesi ${F.risk}/7. ${F.risk<=3?'Düşük risk kategorisinde — sermaye koruma odaklı.':F.risk<=5?'Orta-yüksek risk — yatırım ufku en az 3 yıl olmalı.':'Yüksek risk — kısa vadeli dalgalanmaya hazırlıklı olunmalı.'}`,
-    'default':`${F.code} hakkında: Kurucu ${F.kurucu}, ${F.cat} kategorisinde, risk seviyesi ${F.risk}/7. 1 yıllık getiri %${F.r1y}, 3 yıllık %${F.r3y}. ${F.katilim?'Katılım uyumlu — faizsiz araçlara yatırım yapıyor.':'Konvansiyonel fon.'} Daha fazla detay için KAP bildirimleri sayfasını inceleyebilirsin.`,
-  };
-  setTimeout(()=>{
-    const l=q.toLowerCase();
-    const r=l.includes('avantaj')?replies.avantaj:l.includes('risk')?replies.risk:replies.default;
-    ans.textContent=r;
-    ans.style.color='var(--text2)';
-  },600);
+function renderPriceChartReal(history){
+  if(!history||history.length<2) return;
+  const sorted = [...history].sort((a,b)=>parseInt(a.TARIH)-parseInt(b.TARIH));
+  
+  window._historyData = sorted; // period filtresi için sakla
+  drawPriceChart(sorted);
 }
 
-// KAP
-document.getElementById('kap-list').innerHTML=F.kapNews.map(n=>`
-  <div class="kap-row">
-    <div class="kap-title">${n.title}</div>
-    <div class="kap-meta">${n.date} · <span style="color:var(--accent2)">${n.tur}</span></div>
-  </div>`).join('');
-
-// Benzer fonlar
-document.getElementById('similar-funds').innerHTML=F.benzer.map(b=>`
-  <a class="sim-row" href="fon.html?kod=${b.code}">
-    <div class="pos-av" style="background:${b.c};color:${b.tc};width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;flex-shrink:0;">${b.code.slice(0,2)}</div>
-    <div style="flex:1;"><div style="font-size:13px;font-weight:500;">${b.name}</div><div style="font-size:11px;color:var(--text3);">${b.code}</div></div>
-    <div style="font-size:13px;font-weight:500;color:var(--green);">+%${b.r1y}</div>
-  </a>`).join('');
-
-// Quick summary
-document.getElementById('quick-summary').innerHTML=`
-  <div style="display:flex;flex-direction:column;gap:10px;">
-    ${[
-      ['Fon Büyüklüğü',F.aum],['Yatırımcı',F.investors.toLocaleString('tr-TR')],
-      ['Alış Valörü',F.alis],['Satış Valörü',F.satis],
-      ['Yönetim Ücreti',F.yonetim+'/yıl'],['Stopaj',F.stopaj],
-    ].map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:12px;color:var(--text3);">${l}</span>
-      <span style="font-size:13px;font-weight:500;">${v}</span>
-    </div>`).join('')}
-    <div style="border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;">
-      <span style="font-size:12px;color:var(--text3);">Katılım Uyumu</span>
-      <span style="font-size:13px;font-weight:500;color:${F.katilim?'var(--teal)':'var(--text3)'};">${F.katilim?'✓ Uyumlu':'✗ Konvansiyonel'}</span>
-    </div>
-  </div>`;
-
-// Risk widget
-const riskColors=['#3ecf8e','#3ecf8e','#7b6ef6','#7b6ef6','#f6ad55','#f56565','#f56565'];
-document.getElementById('risk-widget').innerHTML=`
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-    <span style="font-size:13px;font-weight:500;">Seviye ${F.risk} / 7</span>
-    <span style="font-size:12px;color:${riskColors[F.risk-1]};">${['','Çok Düşük','Düşük','Orta-Düşük','Orta','Orta-Yüksek','Yüksek','Çok Yüksek'][F.risk]}</span>
-  </div>
-  <div class="risk-bar">${[1,2,3,4,5,6,7].map(i=>`<div class="risk-seg" style="${i<=F.risk?`background:${riskColors[F.risk-1]}`:''}"></div>`).join('')}</div>
-  <p style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.6;">${F.risk<=2?'Sermaye korumaya yakın. Düşük getiri potansiyeli.':F.risk<=4?'Dengeli risk-getiri profili. Orta vadeli yatırım önerilir.':'Yüksek getiri potansiyeli, yüksek volatilite. 3+ yıl yatırım ufku önerilir.'}</p>`;
-
-// Price chart
-let priceChartInst;
-function buildPriceData(period){
-  const base=F.price;
-  const n={1:30,3:90,6:180,1:365,3:365*3,5:365*5}[period]||30;
-  const pts=Math.min(n,60);
-  const labels=[],data=[];
-  let v=base*(period==='1H'?0.92:period==='3H'?0.80:period==='6H'?0.98:0.75);
-  for(let i=0;i<pts;i++){
-    const d=new Date();d.setDate(d.getDate()-(pts-i));
-    labels.push(d.toLocaleDateString('tr-TR',{month:'short',day:'numeric'}));
-    v+=v*(Math.random()*.04-.015);
-    data.push(parseFloat(v.toFixed(3)));
-  }
-  data[data.length-1]=base;
-  return{labels,data};
-}
-function renderPriceChart(period){
-  const{labels,data}=buildPriceData(period);
-  const up=data[data.length-1]>=data[0];
-  const col=up?'#3ecf8e':'#f56565';
-  if(priceChartInst)priceChartInst.destroy();
-  priceChartInst=new Chart(document.getElementById('priceChart'),{
+function drawPriceChart(data){
+  const labels = data.map(r=>{
+    const d = new Date(parseInt(r.TARIH));
+    return d.toLocaleDateString('tr-TR',{month:'short',day:'numeric'});
+  });
+  const prices = data.map(r=>parseFloat(r.FIYAT||0));
+  const up = prices[prices.length-1] >= prices[0];
+  const col = up ? '#3ecf8e' : '#f56565';
+  
+  if(window._priceChart) window._priceChart.destroy();
+  window._priceChart = new Chart(document.getElementById('priceChart'),{
     type:'line',
-    data:{labels,datasets:[{data,borderColor:col,backgroundColor:col+'18',fill:true,tension:.4,pointRadius:0,borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>`₺${c.parsed.y.toFixed(3)}`}}},scales:{x:{ticks:{maxTicksLimit:8,font:{size:10},color:'#555a6a'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#555a6a',callback:v=>'₺'+v.toFixed(3)},grid:{color:'rgba(255,255,255,0.04)'}}}}
+    data:{labels, datasets:[{data:prices, borderColor:col, backgroundColor:col+'18', fill:true, tension:.4, pointRadius:0, borderWidth:2}]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{mode:'index',intersect:false, callbacks:{label:c=>`₺${c.parsed.y.toFixed(3)}`}}},
+      scales:{
+        x:{ticks:{maxTicksLimit:8,font:{size:10},color:'#555a6a'},grid:{display:false}},
+        y:{ticks:{font:{size:10},color:'#555a6a',callback:v=>'₺'+v.toFixed(3)},grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
   });
 }
-function setChart(p,el){
+
+function setChart(period, el){
   document.querySelectorAll('.ct').forEach(x=>x.classList.remove('on'));
   el.classList.add('on');
-  renderPriceChart(p);
+  if(!window._historyData) return;
+  const days = {1:30,3:90,6:180,'1Y':365,'3Y':365*3,'5Y':365*5}[period]||30;
+  const cutoff = Date.now() - days*86400000;
+  const filtered = window._historyData.filter(r=>parseInt(r.TARIH)>=cutoff);
+  drawPriceChart(filtered.length>=2 ? filtered : window._historyData.slice(-30));
 }
-renderPriceChart('1H');
 
-// Compare chart
-new Chart(document.getElementById('compareChart'),{
-  type:'bar',
-  data:{
-    labels:['1 Ay','3 Ay','6 Ay','YTD','1 Yıl','3 Yıl'],
-    datasets:[
-      {label:F.code,data:[F.r1m,F.r3m,F.r6m,F.rytd,F.r1y,F.r3y],backgroundColor:'#7b6ef6',borderRadius:4},
-      {label:'BIST100',data:[3.8,9.4,-4.2,7.1,18.7,72.1],backgroundColor:'#3ecf8e44',borderRadius:4},
-      {label:'Kategori Ort.',data:[3.1,8.9,-3.8,6.8,19.2,68.4],backgroundColor:'#f6ad5544',borderRadius:4},
-    ]
-  },
-  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index'}},scales:{x:{ticks:{font:{size:11},color:'#555a6a'},grid:{display:false}},y:{ticks:{font:{size:11},color:'#555a6a',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.04)'}}}}
-});
+function renderReturns(history, currentPrice){
+  const returns = calcReturns(history, currentPrice);
+  const periods = [
+    ['Son 1 Ay', returns.r1m],
+    ['Son 3 Ay', returns.r3m],
+    ['Son 6 Ay', returns.r6m],
+    ['Yılbaşı', returns.ytd],
+    ['Son 1 Yıl', returns.r1y],
+  ];
+  // Getiri tablosu
+  document.getElementById('perf-tbody').innerHTML = periods.map(([lbl,val])=>`
+    <tr>
+      <td>${lbl}</td>
+      <td style="${chgClass(val)}">${val!=null?chgSign(val):'—'}</td>
+      <td style="color:var(--text3);">—</td>
+      <td style="${chgClass(val)}">—</td>
+      <td style="color:var(--text3);">—</td>
+    </tr>`).join('');
+
+  // Karşılaştırma grafiği
+  const vals = periods.map(([,v])=>v!=null?parseFloat(v.toFixed(2)):0);
+  if(window._compareChart) window._compareChart.destroy();
+  window._compareChart = new Chart(document.getElementById('compareChart'),{
+    type:'bar',
+    data:{
+      labels: periods.map(([l])=>l),
+      datasets:[{label:FUND_CODE, data:vals, backgroundColor:'#7b6ef6', borderRadius:4}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{font:{size:11},color:'#555a6a'},grid:{display:false}},
+        y:{ticks:{font:{size:11},color:'#555a6a',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function renderDagilim(portfolio){
+  // Portföy verisinden varlık dağılımı hesapla
+  if(!portfolio||!portfolio.length){
+    document.getElementById('pie-legend').innerHTML='<p style="color:var(--text3);font-size:13px;">Veri yok</p>';
+    return;
+  }
+  // Grupla
+  const groups = {};
+  for(const p of portfolio){
+    const tur = p.VARLIKTUR||p.HISSETIPI||p.PORTFOYTUR||'Diğer';
+    const pct = parseFloat(p.PORTAYPAYORAN||0)*100;
+    groups[tur] = (groups[tur]||0)+pct;
+  }
+  const colors = ['#7b6ef6','#3ecf8e','#f6ad55','#4fd1c5','#f56565','#a78bfa','#fc8181'];
+  const entries = Object.entries(groups).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  
+  if(window._pieChart) window._pieChart.destroy();
+  window._pieChart = new Chart(document.getElementById('pieChart'),{
+    type:'doughnut',
+    data:{
+      labels: entries.map(([l])=>l),
+      datasets:[{data: entries.map(([,v])=>parseFloat(v.toFixed(1))), backgroundColor:colors, borderWidth:0, hoverOffset:4}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: %${c.parsed.toFixed(1)}`}}}}
+  });
+
+  document.getElementById('pie-legend').innerHTML = entries.map(([lbl,pct],i)=>`
+    <div class="pie-leg-row">
+      <div class="pie-dot" style="background:${colors[i]};"></div>
+      <div style="flex:1;font-size:12px;">${lbl}</div>
+      <div style="font-weight:500;font-size:13px;">%${pct.toFixed(1)}</div>
+    </div>`).join('');
+
+  // Sektör barları (en büyük varlıklar)
+  document.getElementById('sector-bars').innerHTML = entries.map(([lbl,pct],i)=>`
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:12px;color:var(--text2);">${lbl}</span>
+        <span style="font-size:12px;font-weight:500;">%${pct.toFixed(1)}</span>
+      </div>
+      <div style="height:5px;background:var(--bg4);border-radius:3px;">
+        <div style="height:5px;border-radius:3px;background:${colors[i]};width:${Math.min(100,pct)}%;transition:width .6s;"></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderQuickSummary(f){
+  const aum = fmtBig(f.PORTFOYBUYUKLUK||f.portfoybuyukluk);
+  const investors = parseInt(f.KISISAYISI||f.kisisayisi||0).toLocaleString('tr-TR');
+  document.getElementById('quick-summary').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      ${[
+        ['Fon Büyüklüğü', aum],
+        ['Yatırımcı Sayısı', investors],
+        ['Tedavüldeki Pay', parseInt(f.TEDPAYSAYISI||0).toLocaleString('tr-TR')],
+        ['Fon Kodu', FUND_CODE],
+        ['Alış Valörü', 'T+1'],
+        ['Satış Valörü', 'T+2'],
+      ].map(([l,v])=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:var(--text3);">${l}</span>
+          <span style="font-size:13px;font-weight:500;">${v}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderRiskWidget(){
+  // TEFAS'ta risk skoru yok — varsayılan göster
+  document.getElementById('risk-widget').innerHTML=`
+    <p style="font-size:12px;color:var(--text3);line-height:1.7;">Risk skoru TEFAS verilerinde bulunmuyor. Fonun KAP sayfasını inceleyerek izahname risk skorunu öğrenebilirsiniz.</p>
+    <a href="https://www.kap.org.tr" target="_blank" style="font-size:12px;color:var(--accent2);margin-top:8px;display:inline-block;">KAP.org.tr →</a>`;
+}
+
+function renderAI(f, returns){
+  const name = f.FONUNVAN||FUND_CODE;
+  const aum = fmtBig(f.PORTFOYBUYUKLUK||f.portfoybuyukluk);
+  const inv = parseInt(f.KISISAYISI||0).toLocaleString('tr-TR');
+  const r1y = returns.r1y!=null ? `%${fmt(returns.r1y)}` : 'hesaplanıyor';
+  
+  document.getElementById('ai-summary-box').innerHTML=`
+    <div class="ai-hdr"><div class="ai-dot"></div><div class="ai-lbl">AI Özeti — TEFAS Verisi</div></div>
+    <div class="ai-txt">${name} fonu TEFAS'ta aktif olarak işlem görüyor. Fon büyüklüğü ${aum}, toplam ${inv} yatırımcıya sahip. 1 yıllık getiri ${r1y}. Detaylı analiz için portföy pozisyonları sekmesini inceleyebilirsiniz.</div>`;
+  document.getElementById('ai-signals').innerHTML=`
+    <div class="signal-row"><div class="sig-dot" style="background:var(--teal)"></div><div style="font-size:13px;color:var(--text2);line-height:1.6;">Fon büyüklüğü: ${aum}</div></div>
+    <div class="signal-row"><div class="sig-dot" style="background:var(--green)"></div><div style="font-size:13px;color:var(--text2);line-height:1.6;">Yatırımcı sayısı: ${inv}</div></div>
+    <div class="signal-row"><div class="sig-dot" style="background:var(--accent2)"></div><div style="font-size:13px;color:var(--text2);line-height:1.6;">1 yıllık getiri: ${r1y}</div></div>`;
+}
+
+function renderKAP(){
+  document.getElementById('kap-list').innerHTML=`
+    <p style="font-size:13px;color:var(--text3);padding:8px 0;line-height:1.8;">KAP bildirimleri için <a href="https://www.kap.org.tr/tr/arama?konu=Fon+Portf%C3%B6y%C3%BC" target="_blank" style="color:var(--accent2);">KAP.org.tr</a> adresini ziyaret edebilirsiniz. ${FUND_CODE} araması yaparak tüm bildirimlere ulaşabilirsiniz.</p>
+    <a href="https://www.kap.org.tr/tr/arama?konu=${FUND_CODE}" target="_blank" class="btn-outline" style="display:inline-block;margin-top:8px;">KAP'ta Ara →</a>`;
+}
+
+function renderSimilarFunds(allFunds){
+  if(!allFunds||!allFunds.length){
+    document.getElementById('similar-funds').innerHTML='<p style="color:var(--text3);font-size:12px;">Veri yok</p>';
+    return;
+  }
+  // Aynı fon hariç rastgele 3 fon
+  const others = allFunds.filter(f=>(f.FONKODU||'')!==FUND_CODE).slice(0,50);
+  const picks = others.sort(()=>Math.random()-0.5).slice(0,3);
+  document.getElementById('similar-funds').innerHTML = picks.map(f=>{
+    const kod = f.FONKODU||'';
+    const col = fundColor(kod);
+    return `<a class="sim-row" href="fon.html?kod=${kod}">
+      <div class="pos-av" style="background:${col.bg};color:${col.tc};width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;flex-shrink:0;">${kod.slice(0,2)}</div>
+      <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${(f.FONUNVAN||kod).slice(0,30)}...</div><div style="font-size:11px;color:var(--text3);">${kod}</div></div>
+    </a>`;
+  }).join('');
+}
+
+function askAI(){
+  const q = document.getElementById('aiQ').value.trim();
+  if(!q) return;
+  const ans = document.getElementById('ai-answer');
+  ans.style.display='block';
+  ans.innerHTML='<span style="color:var(--text3)">Yanıt hazırlanıyor...</span>';
+  setTimeout(()=>{
+    const l = q.toLowerCase();
+    let r = `${FUND_CODE} hakkında: TEFAS verilerine göre mevcut bilgiler hero bölümünde ve fon bilgileri kartında gösteriliyor. Daha detaylı analiz için KAP bildirimleri sekmesini inceleyebilirsiniz.`;
+    if(l.includes('risk')) r = `${FUND_CODE} için TEFAS'ta risk skoru verisi bulunmuyor. Fonun izahnamesindeki risk sınıflandırmasını KAP.org.tr üzerinden öğrenebilirsiniz.`;
+    if(l.includes('karşılaştır')||l.includes('getiri')) r = `${FUND_CODE} getirileri Getiri Analizi sekmesinde detaylı gösteriliyor. 1 yıllık getiri hesabı tarihsel fiyat verilerinden otomatik hesaplanmaktadır.`;
+    ans.textContent = r;
+    ans.style.color = 'var(--text2)';
+  }, 600);
+}
+
+// ---- Tab sistemi ----
+function setTab(id, el){
+  document.querySelectorAll('.tabcontent').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  el.classList.add('on');
+}
+
+// ---- ANA YÜKLEYİCİ ----
+async function loadFund(){
+  showLoading();
+  
+  try {
+    // 1. Fon detayı
+    const [detailRes, historyRes, portfolioRes, allFundsRes] = await Promise.allSettled([
+      fetch(`${API}/fund/${FUND_CODE}`),
+      fetch(`${API}/fund/${FUND_CODE}/history`),
+      fetch(`${API}/fund/${FUND_CODE}/portfolio`),
+      fetch(`${API}/funds?limit=100`),
+    ]);
+
+    const detail   = detailRes.status==='fulfilled'   ? await detailRes.value.json()   : null;
+    const history  = historyRes.status==='fulfilled'  ? await historyRes.value.json()  : null;
+    const portData = portfolioRes.status==='fulfilled' ? await portfolioRes.value.json() : null;
+    const allFunds = allFundsRes.status==='fulfilled'  ? await allFundsRes.value.json()  : null;
+
+    const f = detail?.fund || detail || {};
+    const hist = history?.history || history || [];
+    const portfolio = portData?.portfolio || portData || [];
+    const funds = allFunds?.funds || allFunds || [];
+
+    const currentPrice = parseFloat(f.FIYAT||f.fiyat||0);
+    const returns = calcReturns(hist, currentPrice);
+
+    // Render
+    renderHero(f, hist);
+    renderInfoGrid(f);
+    renderPositions(portfolio, 'mini-positions', FREE_LIMIT);
+    renderPositions(portfolio, 'full-positions', null);
+    renderPriceChartReal(hist);
+    renderReturns(hist, currentPrice);
+    renderDagilim(portfolio);
+    renderQuickSummary(f);
+    renderRiskWidget();
+    renderAI(f, returns);
+    renderKAP();
+    renderSimilarFunds(funds);
+
+  } catch(err) {
+    console.error('Load error:', err);
+    document.getElementById('hero-name').textContent = 'Veri yüklenemedi: ' + FUND_CODE;
+    document.getElementById('hero-price').textContent = '—';
+  }
+}
+
+loadFund();
 </script>
 </body>
 </html>
