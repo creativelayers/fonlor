@@ -948,9 +948,27 @@ async function loadFund(){
       tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,6)), bittarih:dateStr(new Date(monthsBeforeDate(lastTradeDate,6).getTime()+5*86400000)) }).catch(()=>[]),
     ]);
 
-    // 5Y için ayrı sorgu (hata verirse boş dön)
+    // 5Y: ana akışta çekme, arka planda çek ve gelince güncelle
     let y5Rows = [];
-    try { const m60 = monthsBeforeDate(lastTradeDate,60); y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(m60), bittarih:dateStr(new Date(m60.getTime()+7*86400000)) }); } catch(e) { console.log('5Y hata:', e); }
+    // Arka planda 5Y hesapla
+    setTimeout(async () => {
+      try {
+        const m60 = monthsBeforeDate(lastTradeDate,60);
+        const rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(m60), bittarih:dateStr(new Date(m60.getTime()+7*86400000)) });
+        const row = rows.filter(r=>r.FONKODU===FUND_CODE)[0];
+        if(row?.FIYAT) {
+          const r5y = ((currentPrice - parseFloat(row.FIYAT)) / parseFloat(row.FIYAT)) * 100;
+          // UI güncelle
+          const cells = ['gcell-5Y', 'pret-5Y'];
+          const display = (r5y>=0?'+':'')+r5y.toFixed(2)+'%';
+          const color = r5y>=0?'var(--green)':'var(--red)';
+          const gcell = document.getElementById('gcell-5Y');
+          if(gcell) gcell.querySelector('.getiri-val').innerHTML = `<span style="color:${color}">${display}</span>`;
+          const pret = document.getElementById('pret-5Y');
+          if(pret){ pret.textContent = display; pret.classList.toggle('pos',r5y>0); pret.classList.toggle('neg',r5y<0); }
+        }
+      } catch(e) {}
+    }, 100);
 
     // Getiri hesapla
     function periodReturn(rows, code) {
