@@ -860,18 +860,14 @@ function setTab(id, el){
   el.classList.add('on');
 }
 
-// ---- TEFAS DIREKT API ----
-const TEFAS = 'https://www.tefas.gov.tr/api/DB';
+// ---- TEFAS PROXY (Vercel Edge) ----
+const TEFAS_PROXY = '/api/proxy';
 
 async function tefasPost(endpoint, params) {
   const body = Object.entries(params).map(([k,v])=>`${k}=${encodeURIComponent(v)}`).join('&');
-  const res = await fetch(`${TEFAS}/${endpoint}`, {
+  const res = await fetch(`${TEFAS_PROXY}?endpoint=${endpoint}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      'X-Requested-With': 'XMLHttpRequest',
-      'Referer': 'https://www.tefas.gov.tr/TarihselVeriler.aspx',
-    },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
     body
   });
   const d = await res.json();
