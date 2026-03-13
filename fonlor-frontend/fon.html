@@ -950,7 +950,7 @@ async function loadFund(){
 
     // 5Y için ayrı sorgu (hata verirse boş dön)
     let y5Rows = [];
-    try { const m60 = monthsBeforeDate(lastTradeDate,60); y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(m60), bittarih:dateStr(new Date(m60.getTime()+5*86400000)) }); } catch(e) {}
+    try { const m60 = monthsBeforeDate(lastTradeDate,60); y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(m60), bittarih:dateStr(new Date(m60.getTime()+7*86400000)) }); } catch(e) { console.log('5Y hata:', e); }
 
     // Getiri hesapla
     function periodReturn(rows, code) {
