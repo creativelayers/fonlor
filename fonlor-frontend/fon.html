@@ -541,10 +541,11 @@ function calcReturns(history, currentPrice){
   function exactWeeksAgo(n) {
     const d = new Date(now); d.setDate(d.getDate()-(n*7)); return d;
   }
+  // Fintables: hedef tarihten sonraki ilk işlem günü
   function priceAtDate(target) {
-    let best = prices[0];
-    for(const r of prices){ if(r.d <= target) best = r; }
-    return best.p;
+    // Hedef tarihten >= olan ilk kaydı bul (Fintables mantığı)
+    for(const r of prices){ if(r.d >= target) return r.p; }
+    return prices[prices.length-1].p;
   }
 
   return {
@@ -941,19 +942,23 @@ async function loadFund(){
 
     const [ytdRows, y1Rows, y3Rows, y6Rows] = await Promise.all([
       tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(yearStart()), bittarih:lastTrade }).catch(()=>[]),
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,12)), bittarih:dateStr(monthsBeforeDate(lastTradeDate,12)) }).catch(()=>[]),
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,36)), bittarih:dateStr(monthsBeforeDate(lastTradeDate,36)) }).catch(()=>[]),
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,6)), bittarih:dateStr(monthsBeforeDate(lastTradeDate,6)) }).catch(()=>[]),
+      // Tek gün tatil olabilir, 5 günlük aralık sor - sonraki işlem günü periodReturn ile alınır
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,12)), bittarih:dateStr(new Date(monthsBeforeDate(lastTradeDate,12).getTime()+5*86400000)) }).catch(()=>[]),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,36)), bittarih:dateStr(new Date(monthsBeforeDate(lastTradeDate,36).getTime()+5*86400000)) }).catch(()=>[]),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,6)), bittarih:dateStr(new Date(monthsBeforeDate(lastTradeDate,6).getTime()+5*86400000)) }).catch(()=>[]),
     ]);
 
     // 5Y için ayrı sorgu (hata verirse boş dön)
     let y5Rows = [];
-    try { y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(monthsBeforeDate(lastTradeDate,60)), bittarih:dateStr(monthsBeforeDate(lastTradeDate,60)) }); } catch(e) {}
+    try { const m60 = monthsBeforeDate(lastTradeDate,60); y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(m60), bittarih:dateStr(new Date(m60.getTime()+5*86400000)) }); } catch(e) {}
 
     // Getiri hesapla
     function periodReturn(rows, code) {
-      const row = rows.find(r=>r.FONKODU===code) || rows[0];
-      return row?.FIYAT ? row.FIYAT : null;
+      // Tarihe göre sırala - en eskiyi al (hedef tarih >= olan ilk işlem günü)
+      const filtered = rows.filter(r=>r.FONKODU===code);
+      if(!filtered.length) return null;
+      filtered.sort((a,b)=>parseInt(a.TARIH)-parseInt(b.TARIH));
+      return filtered[0]?.FIYAT || null;
     }
     const currentPrice = parseFloat(basic.FIYAT||0);
     function pct(p0) { return p0 ? ((currentPrice-p0)/p0)*100 : null; }
