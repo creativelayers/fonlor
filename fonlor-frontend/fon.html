@@ -45,8 +45,10 @@
   .hero-change{font-size:13px;margin-top:3px;}
 
   /* Getiri row */
-  .getiri-row{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
-  .getiri-cell{background:var(--bg3);border-radius:var(--rsm);padding:10px 12px;text-align:center;}
+  .getiri-row{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;}
+  .getiri-cell{background:var(--bg3);border-radius:var(--rsm);padding:10px 12px;text-align:center;cursor:pointer;border:1px solid transparent;transition:all .15s;}
+  .getiri-cell:hover{background:var(--bg4);border-color:var(--border2);}
+  .getiri-cell.active{background:var(--accent-bg);border-color:var(--accent);}
   .getiri-lbl{font-size:10px;color:var(--text3);margin-bottom:4px;letter-spacing:.3px;}
   .getiri-val{font-size:14px;font-weight:500;}
 
@@ -74,6 +76,17 @@
   .ct{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--text2);cursor:pointer;transition:all .15s;}
   .ct:hover{color:var(--text);}
   .ct.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent2);}
+
+  /* Fintables benzeri period row */
+  .period-row{display:flex;gap:2px;border-bottom:1px solid var(--border);}
+  .period-btn{flex:1;text-align:center;padding:10px 8px 12px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;flex-direction:column;gap:4px;}
+  .period-btn:hover{background:var(--bg3);}
+  .period-btn.active{border-bottom-color:var(--accent2);}
+  .p-lbl{font-size:11px;color:var(--text3);}
+  .period-btn.active .p-lbl{color:var(--text);}
+  .p-ret{font-size:13px;font-weight:600;color:var(--text2);}
+  .p-ret.pos{color:var(--green);}
+  .p-ret.neg{color:var(--red);}
 
   /* Info grid */
   .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -181,7 +194,7 @@
     <div class="hero-price-wrap">
       <div class="hero-price" id="hero-price">—</div>
       <div class="hero-change" id="hero-change"></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:4px;">Son güncelleme: 12 Mart 2026</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;" id="hero-date">—</div>
     </div>
   </div>
   <div class="getiri-row" id="getiri-row"></div>
@@ -205,18 +218,20 @@
     <div class="tabcontent on" id="tab-genel">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Fiyat Grafiği</div>
-          <div class="chart-tabs">
-            <div class="ct on" onclick="setChart('1H',this)">1H</div>
-            <div class="ct" onclick="setChart('3H',this)">3H</div>
-            <div class="ct" onclick="setChart('6H',this)">6H</div>
-            <div class="ct" onclick="setChart('1Y',this)">1Y</div>
-            <div class="ct" onclick="setChart('3Y',this)">3Y</div>
-            <div class="ct" onclick="setChart('5Y',this)">5Y</div>
-          </div>
+          <div class="card-title" id="chart-title">AFT Fiyat Grafiği</div>
         </div>
-        <div class="card-body">
-          <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+        <div class="card-body" style="padding-bottom:0;">
+          <!-- Fintables benzeri periyot butonları — altında getiri % -->
+          <div class="period-row" id="period-row">
+            <div class="period-btn" data-p="1H" onclick="selectPeriod('1H',this)"><span class="p-lbl">1 Hafta</span><span class="p-ret" id="pret-1H">—</span></div>
+            <div class="period-btn" data-p="1A" onclick="selectPeriod('1A',this)"><span class="p-lbl">1 Ay</span><span class="p-ret" id="pret-1A">—</span></div>
+            <div class="period-btn active" data-p="YTD" onclick="selectPeriod('YTD',this)"><span class="p-lbl">2026</span><span class="p-ret" id="pret-YTD">—</span></div>
+            <div class="period-btn" data-p="6A" onclick="selectPeriod('6A',this)"><span class="p-lbl">6 Ay</span><span class="p-ret" id="pret-6A">—</span></div>
+            <div class="period-btn" data-p="1Y" onclick="selectPeriod('1Y',this)"><span class="p-lbl">1 Yıl</span><span class="p-ret" id="pret-1Y">—</span></div>
+            <div class="period-btn" data-p="3Y" onclick="selectPeriod('3Y',this)"><span class="p-lbl">3 Yıl</span><span class="p-ret" id="pret-3Y">—</span></div>
+            <div class="period-btn" data-p="5Y" onclick="selectPeriod('5Y',this)"><span class="p-lbl">5 Yıl</span><span class="p-ret" id="pret-5Y">—</span></div>
+          </div>
+          <div class="chart-wrap" style="height:280px;margin-top:8px;"><canvas id="priceChart"></canvas></div>
         </div>
       </div>
 
@@ -409,6 +424,14 @@ function renderHero(f, history){
 
   document.getElementById('hero-name').textContent = f.FONUNVAN || f.fonunvan || FUND_CODE;
   document.getElementById('hero-price').textContent = '₺' + fmt(price,3);
+  // Başlıklar
+  const ctEl = document.getElementById('chart-title');
+  if(ctEl) ctEl.textContent = FUND_CODE + ' Fiyat Grafiği';
+  // Tarih
+  const dateEl = document.getElementById('hero-date');
+  if(dateEl){
+    const d = new Date(); dateEl.textContent = d.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+  }
 
   const chg = document.getElementById('hero-change');
   chg.innerHTML = `<span style="${chgClass(change)}">${change>=0?'+':''}${fmt(change)}% bugün</span>`;
@@ -419,45 +442,95 @@ function renderHero(f, history){
     <span class="meta-badge" style="background:var(--bg3);color:var(--text2);">Fon</span>
     <span class="meta-badge" style="background:var(--bg3);color:var(--text3);">TEFAS</span>`;
 
-  // Getiri satırı
+  // Getiri satırı — 8 periyot, tıklanabilir
   const returns = calcReturns(history, price);
-  document.getElementById('getiri-row').innerHTML = [
-    ['1H', returns.r1m],
-    ['3H', returns.r3m],
-    ['6H', returns.r6m],
-    ['YTD', returns.ytd],
-    ['1Y', returns.r1y],
-    ['AUM', null, fmtBig(f.PORTFOYBUYUKLUK||f.portfoybuyukluk)],
-    ['Yatırımcı', null, parseInt(f.KISISAYISI||f.kisisayisi||0).toLocaleString('tr-TR')],
-  ].map(([lbl,val,raw])=>{
-    const display = raw ?? (val!=null ? `<span style="${chgClass(val)}">${chgSign(val)}</span>` : '—');
-    return `<div class="getiri-cell"><div class="getiri-lbl">${lbl}</div><div class="getiri-val">${display}</div></div>`;
+  window._currentReturns = returns;
+  const YEAR = new Date().getFullYear();
+  const periodMap = [
+    {key:'1H',  label:'1 Hafta',     ret: returns.r1h,  days:7},
+    {key:'1A',  label:'1 Ay',        ret: returns.r1m,  days:30},
+    {key:'YTD', label:String(YEAR),  ret: returns.ytd,  days:null},
+    {key:'6A',  label:'6 Ay',        ret: returns.r6m,  days:180},
+    {key:'1Y',  label:'1 Yıl',       ret: returns.r1y,  days:365},
+    {key:'3Y',  label:'3 Yıl',       ret: returns.r3y,  days:365*3},
+    {key:'5Y',  label:'5 Yıl',       ret: returns.r5y,  days:365*5},
+  ];
+  window._periodMap = periodMap;
+
+  // Getiri row (hero altı)
+  document.getElementById('getiri-row').innerHTML = periodMap.map(({key,label,ret})=>{
+    const cls = ret>0?'color:var(--green)':ret<0?'color:var(--red)':'color:var(--text2)';
+    const display = ret!=null ? `<span style="${cls}">${ret>=0?'+':''}${fmt(ret)}%</span>` : '—';
+    return `<div class="getiri-cell" id="gcell-${key}" onclick="selectPeriod('${key}',null)">
+      <div class="getiri-lbl">${label}</div>
+      <div class="getiri-val">${display}</div>
+    </div>`;
   }).join('');
+
+  // Period butonları altındaki getiri yüzdelerini doldur
+  periodMap.forEach(({key,ret})=>{
+    const el = document.getElementById('pret-'+key);
+    if(!el) return;
+    if(ret!=null){
+      el.textContent = (ret>=0?'+':'')+fmt(ret)+'%';
+      el.classList.toggle('pos', ret>0);
+      el.classList.toggle('neg', ret<0);
+    }
+  });
+}
+
+function parseHistDate(r){
+  // TARIH: timestamp MS (1234567890123) veya "DD.MM.YYYY" veya _DATE: "YYYY-MM-DD"
+  const raw = r._DATE || r.TARIH || r.tarih;
+  if(!raw) return null;
+  const s = String(raw);
+  // Timestamp MS
+  if(/^\d{10,}$/.test(s)){
+    return new Date(parseInt(s));
+  }
+  // YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)){
+    return new Date(s.slice(0,10)+'T12:00:00');
+  }
+  // DD.MM.YYYY
+  if(/^\d{2}\.\d{2}\.\d{4}/.test(s)){
+    const [d,m,y] = s.split('.');
+    return new Date(`${y}-${m}-${d}T12:00:00`);
+  }
+  return null;
 }
 
 function calcReturns(history, currentPrice){
   if(!history||history.length<2) return {};
-  const prices = history.map(r=>({
-    date: new Date(parseInt(r.TARIH||r.tarih)),
-    price: parseFloat(r.FIYAT||r.fiyat||0)
-  })).filter(r=>r.price>0).sort((a,b)=>a.date-b.date);
+  const prices = history.map(r=>{
+    const d = parseHistDate(r);
+    const p = parseFloat(r.FIYAT||r.fiyat||0);
+    return d&&p ? {d, p} : null;
+  }).filter(Boolean).sort((a,b)=>a.d-b.d);
   if(!prices.length) return {};
+
+  const lp = currentPrice || prices[prices.length-1].p;
   const now = new Date();
-  const lp = currentPrice || prices[prices.length-1].price;
+
   function priceNDaysAgo(n){
     const target = new Date(now - n*86400000);
     let best = prices[0];
-    for(const p of prices){ if(p.date<=target) best=p; }
-    return best.price;
+    for(const r of prices){ if(r.d <= target) best = r; }
+    return best.p;
   }
   function pct(old){ return old ? ((lp-old)/old)*100 : null; }
+
   const yearStart = new Date(now.getFullYear(),0,1);
-  const ytdBase = prices.find(p=>p.date>=yearStart)?.price || prices[0].price;
+  const ytdBase = [...prices].reverse().find(r=>r.d < yearStart)?.p || prices[0].p;
+
   return {
+    r1h: pct(priceNDaysAgo(7)),
     r1m: pct(priceNDaysAgo(30)),
     r3m: pct(priceNDaysAgo(90)),
     r6m: pct(priceNDaysAgo(180)),
     r1y: pct(priceNDaysAgo(365)),
+    r3y: pct(priceNDaysAgo(365*3)),
+    r5y: pct(priceNDaysAgo(365*5)),
     ytd: pct(ytdBase),
   };
 }
@@ -540,21 +613,26 @@ function renderPositions(portfolio, containerId, limit){
 
 function renderPriceChartReal(history){
   if(!history||history.length<2) return;
-  const sorted = [...history].sort((a,b)=>parseInt(a.TARIH)-parseInt(b.TARIH));
-  
-  window._historyData = sorted; // period filtresi için sakla
-  drawPriceChart(sorted);
+  const sorted = history.map(r=>{
+    const d = parseHistDate(r);
+    const p = parseFloat(r.FIYAT||r.fiyat||0);
+    return d&&p ? {d, p, raw:r} : null;
+  }).filter(Boolean).sort((a,b)=>a.d-b.d);
+
+  window._historyParsed = sorted; // [{d:Date, p:float}]
+  // Varsayılan: YTD
+  const now = new Date();
+  const yearStart = new Date(now.getFullYear(),0,1);
+  const ytd = sorted.filter(r=>r.d >= yearStart);
+  drawPriceChart(ytd.length>=2 ? ytd : sorted.slice(-90));
 }
 
 function drawPriceChart(data){
-  const labels = data.map(r=>{
-    const d = new Date(parseInt(r.TARIH));
-    return d.toLocaleDateString('tr-TR',{month:'short',day:'numeric'});
-  });
-  const prices = data.map(r=>parseFloat(r.FIYAT||0));
+  const labels = data.map(r=>r.d.toLocaleDateString('tr-TR',{month:'short',day:'numeric'}));
+  const prices = data.map(r=>r.p);
   const up = prices[prices.length-1] >= prices[0];
   const col = up ? '#3ecf8e' : '#f56565';
-  
+
   if(window._priceChart) window._priceChart.destroy();
   window._priceChart = new Chart(document.getElementById('priceChart'),{
     type:'line',
@@ -569,26 +647,43 @@ function drawPriceChart(data){
   });
 }
 
-function setChart(period, el){
-  document.querySelectorAll('.ct').forEach(x=>x.classList.remove('on'));
-  el.classList.add('on');
-  if(!window._historyData) return;
-  const days = {1:30,3:90,6:180,'1Y':365,'3Y':365*3,'5Y':365*5}[period]||30;
-  const cutoff = Date.now() - days*86400000;
-  const filtered = window._historyData.filter(r=>parseInt(r.TARIH)>=cutoff);
-  drawPriceChart(filtered.length>=2 ? filtered : window._historyData.slice(-30));
+function selectPeriod(key, btnEl){
+  // Period butonlarını güncelle
+  document.querySelectorAll('.period-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.getiri-cell').forEach(x=>x.classList.remove('active'));
+  if(btnEl) btnEl.classList.add('active');
+  const gcell = document.getElementById('gcell-'+key);
+  if(gcell) gcell.classList.add('active');
+  const pbtn = document.querySelector(`.period-btn[data-p="${key}"]`);
+  if(pbtn) pbtn.classList.add('active');
+
+  if(!window._historyParsed) return;
+  const now = new Date();
+  let filtered;
+  if(key==='YTD'){
+    const ys = new Date(now.getFullYear(),0,1);
+    filtered = window._historyParsed.filter(r=>r.d >= ys);
+  } else {
+    const days = {1H:7,1A:30,6A:180,1Y:365,3Y:365*3,5Y:365*5}[key]||365;
+    const cutoff = new Date(now - days*86400000);
+    filtered = window._historyParsed.filter(r=>r.d >= cutoff);
+  }
+  drawPriceChart(filtered.length>=2 ? filtered : window._historyParsed.slice(-30));
 }
 
 function renderReturns(history, currentPrice){
   const returns = calcReturns(history, currentPrice);
+  const YEAR = new Date().getFullYear();
   const periods = [
-    ['Son 1 Ay', returns.r1m],
-    ['Son 3 Ay', returns.r3m],
-    ['Son 6 Ay', returns.r6m],
-    ['Yılbaşı', returns.ytd],
-    ['Son 1 Yıl', returns.r1y],
+    ['1 Hafta',          returns.r1h],
+    ['1 Ay',             returns.r1m],
+    ['3 Ay',             returns.r3m],
+    ['6 Ay',             returns.r6m],
+    [`${YEAR} Başından`, returns.ytd],
+    ['1 Yıl',            returns.r1y],
+    ['3 Yıl',            returns.r3y],
+    ['5 Yıl',            returns.r5y],
   ];
-  // Getiri tablosu
   document.getElementById('perf-tbody').innerHTML = periods.map(([lbl,val])=>`
     <tr>
       <td>${lbl}</td>
@@ -598,19 +693,20 @@ function renderReturns(history, currentPrice){
       <td style="color:var(--text3);">—</td>
     </tr>`).join('');
 
-  // Karşılaştırma grafiği
   const vals = periods.map(([,v])=>v!=null?parseFloat(v.toFixed(2)):0);
   if(window._compareChart) window._compareChart.destroy();
   window._compareChart = new Chart(document.getElementById('compareChart'),{
     type:'bar',
     data:{
       labels: periods.map(([l])=>l),
-      datasets:[{label:FUND_CODE, data:vals, backgroundColor:'#7b6ef6', borderRadius:4}]
+      datasets:[{label:FUND_CODE, data:vals,
+        backgroundColor: vals.map(v=>v>=0?'rgba(62,207,142,.7)':'rgba(245,101,101,.7)'),
+        borderRadius:4}]
     },
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false}},
       scales:{
-        x:{ticks:{font:{size:11},color:'#555a6a'},grid:{display:false}},
+        x:{ticks:{font:{size:10},color:'#555a6a'},grid:{display:false}},
         y:{ticks:{font:{size:11},color:'#555a6a',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.04)'}}
       }
     }
@@ -761,7 +857,7 @@ async function loadFund(){
     // 1. Fon detayı
     const [detailRes, historyRes, portfolioRes, allFundsRes] = await Promise.allSettled([
       fetch(`${API}/fund/${FUND_CODE}`),
-      fetch(`${API}/fund/${FUND_CODE}/history?days=90`),
+      fetch(`${API}/fund/${FUND_CODE}/history?days=1825`),
       fetch(`${API}/fund/${FUND_CODE}/portfolio`),
       fetch(`${API}/funds?limit=100`),
     ]);
