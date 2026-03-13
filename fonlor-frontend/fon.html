@@ -921,10 +921,14 @@ async function loadFund(){
       catch(e) { return new Date(d.getFullYear()-n, d.getMonth(), d.getDate()-1); }
     }
     
-    const [ytdRows, y1Rows, y3Rows] = await Promise.all([
+    // 6 ay öncesi: lastTradeDate'ten tam 180 gün önce
+    const d6ago = new Date(lastTradeDate); d6ago.setDate(d6ago.getDate()-180);
+
+    const [ytdRows, y1Rows, y3Rows, y6Rows] = await Promise.all([
       tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(yearStart()), bittarih:lastTrade }).catch(()=>[]),
       tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,1)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,1)) }).catch(()=>[]),
       tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,3)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,3)) }).catch(()=>[]),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(d6ago), bittarih:dateStr(d6ago) }).catch(()=>[]),
     ]);
 
     // 5Y için ayrı sorgu (hata verirse boş dön)
@@ -941,6 +945,7 @@ async function loadFund(){
 
     const ytdFirst = ytdRows.filter(r=>r.FONKODU===FUND_CODE).sort((a,b)=>parseInt(a.TARIH)-parseInt(b.TARIH))[0];
     const r_ytd = ytdFirst?.FIYAT ? pct(parseFloat(ytdFirst.FIYAT)) : null;
+    const r_6m  = pct(parseFloat(periodReturn(y6Rows, FUND_CODE)||0)||null);
     const r_1y  = pct(parseFloat(periodReturn(y1Rows, FUND_CODE)||0)||null);
     const r_3y  = pct(parseFloat(periodReturn(y3Rows, FUND_CODE)||0)||null);
     const r_5y  = pct(parseFloat(periodReturn(y5Rows, FUND_CODE)||0)||null);
@@ -955,6 +960,7 @@ async function loadFund(){
       TEDPAYSAYISI:     basic.TEDPAYSAYISI,
       BORSABULTENFIYAT: basic.BORSABULTENFIYAT,
       TARIH:            basic.TARIH,
+      GETIRI6AY:        r_6m,
       GETIRI1YIL:       r_1y,
       GETIRIYTD:        r_ytd,
       GETIRI3YIL:       r_3y,
