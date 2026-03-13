@@ -899,24 +899,36 @@ async function loadFund(){
   try {
     const today = todayStr();
 
-    // 1. Temel fon bilgisi + 90 gün grafik için history (paralel)
-    const [basicRows, histRows] = await Promise.all([
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:today, bittarih:today }),
+    // 1. Son 5 günü çek - hafta sonu/tatil durumunda son işlem gününü bul
+    const [recentRows, histRows] = await Promise.all([
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(daysAgo(5)), bittarih:today }),
       tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(daysAgo(90)), bittarih:today }),
     ]);
 
-    const basic = basicRows.find(r=>r.FONKODU===FUND_CODE) || basicRows[0] || {};
+    // Son işlem günündeki veriyi al (bugün borsa kapalı olabilir)
+    const sorted5 = recentRows.filter(r=>r.FONKODU===FUND_CODE).sort((a,b)=>parseInt(b.TARIH)-parseInt(a.TARIH));
+    const basic = sorted5[0] || {};
     const hist  = histRows.filter(r=>r.FONKODU===FUND_CODE).sort((a,b)=>parseInt(a.TARIH)-parseInt(b.TARIH));
 
     // 2. Getiriler için dönemsel sorgular (paralel)
+    // Son işlem gününü bul (bugün borsa kapalı olabilir)
+    const lastTradeDate = basic.TARIH ? new Date(parseInt(basic.TARIH)) : new Date(daysAgo(1));
+    const lastTrade = dateStr(lastTradeDate);
+    
+    // 1Y, 3Y, 5Y için tam tarih hesapla (son işlem günü baz alınarak)
+    function exactYearsBeforeDate(d, n) {
+      try { return new Date(d.getFullYear()-n, d.getMonth(), d.getDate()); }
+      catch(e) { return new Date(d.getFullYear()-n, d.getMonth(), d.getDate()-1); }
+    }
+    
     const [ytdRows, y1Rows, y3Rows] = await Promise.all([
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(yearStart()), bittarih:today }),
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsAgo(1)), bittarih:dateStr(exactYearsAgo(1)) }),
-      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsAgo(3)), bittarih:dateStr(exactYearsAgo(3)) }),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(yearStart()), bittarih:lastTrade }),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,1)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,1)) }),
+      tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,3)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,3)) }),
     ]);
 
     // 5Y için ayrı sorgu
-    const y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsAgo(5)), bittarih:dateStr(exactYearsAgo(5)) });
+    const y5Rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(exactYearsBeforeDate(lastTradeDate,5)), bittarih:dateStr(exactYearsBeforeDate(lastTradeDate,5)) });
 
     // Getiri hesapla
     function periodReturn(rows, code) {
