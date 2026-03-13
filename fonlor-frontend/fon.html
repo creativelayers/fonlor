@@ -443,27 +443,16 @@ function renderHero(f, history){
     <span class="meta-badge" style="background:var(--bg3);color:var(--text3);">TEFAS</span>`;
 
   // Getiri satırı — API'den hazır getirileri al
-  const apiRet = {
-    r1h:  parseFloat(f.GETIRI1HAFTA||f.GETIRIHAFTALIK||0)||null,
-    r1m:  parseFloat(f.GETIRI1AY||0)||null,
-    r3m:  parseFloat(f.GETIRI3AY||0)||null,
-    r6m:  parseFloat(f.GETIRI6AY||0)||null,
+  const histRet = calcReturns(history, price);
+  const returns = {
+    r1h:  parseFloat(f.GETIRI1HAFTA||f.GETIRIHAFTALIK||0)||histRet.r1h||null,
+    r1m:  parseFloat(f.GETIRI1AY||0)||histRet.r1m||null,
+    r3m:  parseFloat(f.GETIRI3AY||0)||histRet.r3m||null,
+    r6m:  parseFloat(f.GETIRI6AY||0)||histRet.r6m||null,
     r1y:  parseFloat(f.GETIRI1YIL||0)||null,
     ytd:  parseFloat(f.GETIRIYTD||0)||null,
     r3y:  parseFloat(f.GETIRI3YIL||0)||null,
     r5y:  parseFloat(f.GETIRI5YIL||0)||null,
-  };
-  // Eksik olanlar için history'den hesapla
-  const histRet = calcReturns(history, price);
-  const returns = {
-    r1h:  apiRet.r1h  ?? histRet.r1h,
-    r1m:  apiRet.r1m  ?? histRet.r1m,
-    r3m:  apiRet.r3m  ?? histRet.r3m,
-    r6m:  apiRet.r6m  ?? histRet.r6m,
-    r1y:  apiRet.r1y  ?? histRet.r1y,
-    ytd:  apiRet.ytd  ?? histRet.ytd,
-    r3y:  apiRet.r3y  ?? histRet.r3y,
-    r5y:  apiRet.r5y  ?? histRet.r5y,
   };
   window._currentReturns = returns;
   const YEAR = new Date().getFullYear();
@@ -541,8 +530,9 @@ function calcReturns(history, currentPrice){
   }
   function pct(old){ return old ? ((lp-old)/old)*100 : null; }
 
+  // YTD: yılın ilk işlem günündeki fiyat
   const yearStart = new Date(now.getFullYear(),0,1);
-  const ytdBase = [...prices].reverse().find(r=>r.d < yearStart)?.p || prices[0].p;
+  const ytdBase = prices.find(r=>r.d >= yearStart)?.p || prices[0].p;
 
   return {
     r1h: pct(priceNDaysAgo(7)),
