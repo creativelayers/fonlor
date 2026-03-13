@@ -761,7 +761,7 @@ async function loadFund(){
     // 1. Fon detayı
     const [detailRes, historyRes, portfolioRes, allFundsRes] = await Promise.allSettled([
       fetch(`${API}/fund/${FUND_CODE}`),
-      fetch(`${API}/fund/${FUND_CODE}/history`),
+      fetch(`${API}/fund/${FUND_CODE}/history?days=90`),
       fetch(`${API}/fund/${FUND_CODE}/portfolio`),
       fetch(`${API}/funds?limit=100`),
     ]);
