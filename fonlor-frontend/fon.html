@@ -407,9 +407,9 @@ function renderHero(f, history){
   const col = fundColor(FUND_CODE);
   const price = parseFloat(f.FIYAT||f.fiyat||0);
   
-  // Günlük değişim: history son 2 günden hesapla
-  let change = 0;
-  if(history && history.length>=2){
+  // Günlük değişim: önce API alanından, yoksa history'den
+  let change = parseFloat(f.GUNLUKGETIRI||f.gunlukgetiri||0) || 0;
+  if(!change && history && history.length>=2){
     const prev = parseFloat(history[history.length-2]?.FIYAT||0);
     if(prev) change = ((price-prev)/prev)*100;
   }
@@ -442,8 +442,29 @@ function renderHero(f, history){
     <span class="meta-badge" style="background:var(--bg3);color:var(--text2);">Fon</span>
     <span class="meta-badge" style="background:var(--bg3);color:var(--text3);">TEFAS</span>`;
 
-  // Getiri satırı — 8 periyot, tıklanabilir
-  const returns = calcReturns(history, price);
+  // Getiri satırı — API'den hazır getirileri al
+  const apiRet = {
+    r1h:  parseFloat(f.GETIRI1HAFTA||f.GETIRIHAFTALIK||0)||null,
+    r1m:  parseFloat(f.GETIRI1AY||0)||null,
+    r3m:  parseFloat(f.GETIRI3AY||0)||null,
+    r6m:  parseFloat(f.GETIRI6AY||0)||null,
+    r1y:  parseFloat(f.GETIRI1YIL||0)||null,
+    ytd:  parseFloat(f.GETIRIYTD||0)||null,
+    r3y:  parseFloat(f.GETIRI3YIL||0)||null,
+    r5y:  parseFloat(f.GETIRI5YIL||0)||null,
+  };
+  // Eksik olanlar için history'den hesapla
+  const histRet = calcReturns(history, price);
+  const returns = {
+    r1h:  apiRet.r1h  ?? histRet.r1h,
+    r1m:  apiRet.r1m  ?? histRet.r1m,
+    r3m:  apiRet.r3m  ?? histRet.r3m,
+    r6m:  apiRet.r6m  ?? histRet.r6m,
+    r1y:  apiRet.r1y  ?? histRet.r1y,
+    ytd:  apiRet.ytd  ?? histRet.ytd,
+    r3y:  apiRet.r3y  ?? histRet.r3y,
+    r5y:  apiRet.r5y  ?? histRet.r5y,
+  };
   window._currentReturns = returns;
   const YEAR = new Date().getFullYear();
   const periodMap = [
@@ -857,7 +878,7 @@ async function loadFund(){
     // 1. Fon detayı
     const [detailRes, historyRes, portfolioRes, allFundsRes] = await Promise.allSettled([
       fetch(`${API}/fund/${FUND_CODE}`),
-      fetch(`${API}/fund/${FUND_CODE}/history?days=1825`),
+      fetch(`${API}/fund/${FUND_CODE}/history?days=90`),
       fetch(`${API}/fund/${FUND_CODE}/portfolio`),
       fetch(`${API}/funds?limit=100`),
     ]);
