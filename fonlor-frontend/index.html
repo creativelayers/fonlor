@@ -3,25 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fonlor — Türkiye Fon Takip</title>
+<title>Fonlor — Türkiye Fon Takip Platformu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
-  :root{
+  :root {
     --bg:#0e0f11;--bg2:#16181c;--bg3:#1e2026;--bg4:#25282f;
     --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
     --text:#f0f0f0;--text2:#8a8f9e;--text3:#555a6a;
     --accent:#7b6ef6;--accent2:#9d93f8;--accent-bg:rgba(123,110,246,0.12);
-    --green:#3ecf8e;--red:#f56565;--amber:#f6ad55;--teal:#4fd1c5;
+    --green:#3ecf8e;--green-bg:rgba(62,207,142,0.1);
+    --red:#f56565;--red-bg:rgba(245,101,101,0.1);
+    --amber:#f6ad55;--teal:#4fd1c5;
     --r:12px;--rsm:8px;--rlg:16px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-  h1,h2,h3{font-family:'Syne',sans-serif;}
+  h1,h2,h3,h4{font-family:'Syne',sans-serif;}
   a{text-decoration:none;color:inherit;}
-
   .layout{display:flex;min-height:100vh;}
 
+  /* Sidebar */
   .sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;position:sticky;top:0;height:100vh;flex-shrink:0;}
   .logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px;}
   .logo-mark{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;letter-spacing:-1px;}
@@ -32,340 +34,443 @@
   .nav-item:hover{color:var(--text);background:var(--bg3);}
   .nav-item.active{color:var(--accent2);background:var(--accent-bg);}
   .sidebar-footer{margin-top:auto;padding:16px 20px 0;border-top:1px solid var(--border);}
+  .prem-card{background:var(--accent-bg);border:1px solid rgba(123,110,246,.25);border-radius:var(--rsm);padding:12px;}
+  .prem-card h4{font-size:12px;color:var(--accent2);margin-bottom:4px;}
+  .prem-card p{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:8px;}
+  .btn-prem{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:7px;font-size:11px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;}
+  .btn-prem:hover{opacity:.85;}
 
-  .status{display:flex;align-items:center;gap:6px;padding:6px 20px;font-size:11px;color:var(--text3);}
-  .st-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);}
-  .st-dot.ok{background:var(--green);}
-  .st-dot.err{background:var(--red);}
-  .st-dot.spin{background:var(--amber);animation:pulse 1s infinite;}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-  .main{flex:1;display:flex;flex-direction:column;min-width:0;}
+  /* Main */
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
   .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-  .topbar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:600;flex:1;}
+  .topbar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:600;}
   .search-wrap{position:relative;}
-  .search-input{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm);padding:8px 12px 8px 34px;font-size:13px;color:var(--text);width:240px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;}
-  .search-input::placeholder{color:var(--text3);}
-  .search-input:focus{border-color:var(--accent);}
-  .si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);}
-  .chip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;user-select:none;}
+  .search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.4;}
+  .search-inp{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 12px 7px 32px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;width:220px;outline:none;}
+  .search-inp:focus{border-color:var(--border2);}
+  .screen{display:none;flex:1;flex-direction:column;}
+  .screen.active{display:flex;}
+  .chips{display:flex;gap:6px;padding:14px 28px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
+  .chip{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);color:var(--text2);transition:all .15s;}
   .chip:hover{border-color:var(--border2);color:var(--text);}
   .chip.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent2);}
+  .content{flex:1;overflow-y:auto;padding:20px 28px;}
 
-  .content{flex:1;overflow-y:auto;padding:24px 28px;}
-  .content::-webkit-scrollbar{width:4px;}
-  .content::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px;}
-
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+  /* Stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
   .stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
-  .stat-lbl{font-size:11px;color:var(--text3);margin-bottom:6px;}
-  .stat-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:600;}
-  .stat-sub{font-size:11px;color:var(--text2);margin-top:3px;}
-  .green{color:var(--green);}
-  .red{color:var(--red);}
+  .stat-lbl{font-size:11px;color:var(--text3);letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase;}
+  .stat-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;}
+  .stat-sub{font-size:11px;color:var(--text3);margin-top:4px;}
+  .stat-sub.green{color:var(--green);}
 
-  .tbl-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;}
-  .tbl-head{display:grid;grid-template-columns:2fr .7fr 1fr 1fr .9fr .9fr 80px;padding:11px 20px;border-bottom:1px solid var(--border);font-size:10px;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;}
-  .fund-row{display:grid;grid-template-columns:2fr .7fr 1fr 1fr .9fr .9fr 80px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background .1s;color:inherit;text-decoration:none;}
+  /* Table */
+  .tbl-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+  .tbl-head{display:grid;grid-template-columns:1fr 90px 110px 100px 80px 80px 80px;gap:0;padding:10px 16px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
+  .fund-row{display:grid;grid-template-columns:1fr 90px 110px 100px 80px 80px 80px;gap:0;padding:11px 16px;border-bottom:1px solid var(--border);align-items:center;transition:background .1s;cursor:pointer;}
   .fund-row:last-child{border-bottom:none;}
   .fund-row:hover{background:var(--bg3);}
+  .f-name-wrap{display:flex;align-items:center;gap:10px;min-width:0;}
   .f-av{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;flex-shrink:0;}
   .f-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .f-code{font-size:11px;color:var(--text3);margin-top:1px;}
   .f-cell{font-size:13px;text-align:right;color:var(--text2);}
-  .cat-badge{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;}
-  .pct{font-size:13px;font-weight:500;}
-  .btn-d{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--text2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
-  .btn-d:hover{border-color:var(--accent);color:var(--accent2);}
-  .sortable{cursor:pointer;}
-  .sortable:hover{color:var(--text2);}
-  .sort-asc::after{content:" ↑";}
-  .sort-desc::after{content:" ↓";}
+  .cat-badge{font-size:10px;padding:2px 7px;border-radius:5px;font-weight:500;}
+  .pct{font-size:12px;font-weight:600;}
+  .pct.green{color:var(--green);}
+  .pct.red{color:var(--red);}
+  .btn-detail{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;float:right;}
+  .btn-detail:hover{border-color:var(--accent);color:var(--accent2);}
+  .empty{text-align:center;padding:60px 20px;color:var(--text3);}
+  .empty h3{font-size:16px;margin-bottom:8px;color:var(--text2);}
 
-  .loading-box{text-align:center;padding:80px 20px;}
-  .spinner{width:36px;height:36px;border:3px solid var(--bg4);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px;}
-  @keyframes spin{to{transform:rotate(360deg)}}
+  /* Loading */
+  .skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:4px;height:14px;}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .loading-row{display:grid;grid-template-columns:1fr 90px 110px 100px 80px 80px 80px;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);align-items:center;}
 
-  .error-box{background:rgba(245,101,101,.07);border:1px solid rgba(245,101,101,.2);border-radius:var(--r);padding:24px;margin:20px 0;}
-  .error-box h3{color:var(--red);margin-bottom:10px;font-size:16px;}
-  .error-box p{font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:6px;}
-  .error-box code{background:var(--bg3);padding:3px 8px;border-radius:4px;font-size:12px;color:var(--amber);display:inline-block;margin:2px 0;}
+  /* Search / Reverse */
+  .rev-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;font-size:15px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;margin-bottom:16px;}
+  .rev-input:focus{border-color:var(--accent);}
+  .rev-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+  .rev-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
+  .rev-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer;}
+  .rev-row:last-child{border-bottom:none;}
+  .rev-row:hover{background:var(--bg3);}
 
-  /* Setup modal */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;}
-  .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rlg);padding:28px;width:480px;max-width:95vw;}
-  .modal h2{font-size:18px;margin-bottom:6px;}
-  .modal p{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px;}
-  .modal input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rsm);padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif;margin-bottom:12px;}
-  .modal input:focus{border-color:var(--accent);}
-  .modal input::placeholder{color:var(--text3);}
-  .btn-primary{background:var(--accent);border:none;border-radius:var(--rsm);padding:10px 20px;font-size:13px;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;width:100%;}
-  .btn-primary:hover{opacity:.85;}
-  .hint{font-size:11px;color:var(--text3);margin-bottom:16px;line-height:1.6;}
+  /* Coach */
+  .coach-grid{display:grid;grid-template-columns:1fr 280px;gap:16px;}
+  .chat-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rlg);display:flex;flex-direction:column;height:520px;}
+  .chat-hdr{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);}
+  .chat-av{width:32px;height:32px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;}
+  .sug-chips{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--border);}
+  .sug{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:5px 11px;font-size:11px;color:var(--text2);cursor:pointer;transition:all .15s;}
+  .sug:hover{border-color:var(--accent);color:var(--accent2);}
+  .msgs{flex:1;overflow-y:auto;padding:14px;}
+  .msg{display:flex;flex-direction:column;margin-bottom:12px;}
+  .msg.user{align-items:flex-end;}
+  .msg.ai{align-items:flex-start;}
+  .bubble{max-width:85%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.55;}
+  .msg.user .bubble{background:var(--accent);color:#fff;border-radius:12px 12px 3px 12px;}
+  .msg.ai .bubble{background:var(--bg3);border-radius:12px 12px 12px 3px;}
+  .msg-time{font-size:10px;color:var(--text3);margin-top:4px;padding:0 4px;}
+  .chat-inp-wrap{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--border);}
+  .chat-inp{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;}
+  .send-btn{background:var(--accent);border:none;border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .coach-side{display:flex;flex-direction:column;gap:12px;}
+  .coach-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+  .coach-card h3{font-size:13px;margin-bottom:12px;color:var(--text2);}
+  .alert-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;}
+  .al-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+  .al-txt{font-size:12px;color:var(--text2);line-height:1.5;}
+  .typing{display:flex;gap:4px;padding:4px 0;}
+  .typing span{width:6px;height:6px;background:var(--text3);border-radius:50%;animation:bounce 1.2s infinite;}
+  .typing span:nth-child(2){animation-delay:.2s;}
+  .typing span:nth-child(3){animation-delay:.4s;}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
 </style>
 </head>
 <body>
-
-<!-- API URL kurulum modalı -->
-<div class="modal-overlay" id="setup-modal" style="display:none;">
-  <div class="modal">
-    <h2>🚀 Railway API URL'ini Gir</h2>
-    <p>Railway'e deploy ettikten sonra aldığın URL'i yapıştır. Örnek:<br>
-    <code style="color:var(--amber);font-size:12px;">https://fonlor-production.up.railway.app</code></p>
-    <input type="text" id="api-url-input" placeholder="https://xxx.up.railway.app" />
-    <div class="hint">Bu URL Railway panelinden "Deployments" sekmesinde görünür. Sonunda / olmadan yaz.</div>
-    <button class="btn-primary" onclick="saveApiUrl()">Kaydet ve Bağlan</button>
-  </div>
-</div>
-
 <div class="layout">
-<aside class="sidebar">
-  <div class="logo">
-    <div class="logo-mark">FON<span>LOR</span></div>
-    <div class="logo-sub" id="fund-count-sub">TEFAS · bağlanıyor...</div>
-  </div>
-  <div class="status">
-    <div class="st-dot spin" id="st-dot"></div>
-    <span id="st-label">Bağlanıyor...</span>
-  </div>
-  <div class="nav-sec">Kategori</div>
-  <div class="nav-item active" onclick="setFilter('',this)">🔳 Tüm Fonlar</div>
-  <div class="nav-item" onclick="setFilter('Hisse',this)">📈 Hisse</div>
-  <div class="nav-item" onclick="setFilter('Katılım',this)">🕌 Katılım</div>
-  <div class="nav-item" onclick="setFilter('Altın',this)">🥇 Altın</div>
-  <div class="nav-item" onclick="setFilter('Borçlanma',this)">📄 Borçlanma</div>
-  <div class="nav-item" onclick="setFilter('Para Piyasası',this)">💵 Para Piyasası</div>
-  <div class="nav-item" onclick="setFilter('Karma',this)">⚖️ Karma</div>
-  <div class="nav-sec">Ayarlar</div>
-  <div class="nav-item" onclick="changeApiUrl()">⚙️ API URL Değiştir</div>
-  <div class="sidebar-footer">
-    <div style="background:var(--accent-bg);border:1px solid rgba(123,110,246,.25);border-radius:var(--rsm);padding:12px;">
-      <div style="font-size:12px;font-weight:500;color:var(--accent2);margin-bottom:4px;">Premium</div>
-      <div style="font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:8px;">Tüm pozisyonlar + AI analizi</div>
-      <button style="width:100%;background:var(--accent);border:none;border-radius:6px;padding:7px;font-size:11px;color:#fff;font-family:'DM Sans';cursor:pointer;">79₺/ay</button>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">FON<span>LOR</span></div>
+      <div class="logo-sub" id="logo-sub">TEFAS · yükleniyor...</div>
+    </div>
+    <div class="nav-sec">Menü</div>
+    <div class="nav-item active" onclick="showScreen('funds')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="1" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="8" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="8" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+      Tüm Fonlar
+    </div>
+    <div class="nav-item" onclick="showScreen('search')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Hisse Ara
+    </div>
+    <div class="nav-item" onclick="showScreen('coach')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 7h4M7 5v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      AI Koç
+    </div>
+    <div class="nav-sec">Kategori</div>
+    <div class="nav-item" onclick="filterCat('Tümü')">🔳 Tüm Fonlar</div>
+    <div class="nav-item" onclick="filterCat('Hisse')">📈 Hisse</div>
+    <div class="nav-item" onclick="filterCat('Katılım')">🕌 Katılım</div>
+    <div class="nav-item" onclick="filterCat('Altın')">🥇 Altın</div>
+    <div class="nav-item" onclick="filterCat('Borçlanma')">📄 Borçlanma</div>
+    <div class="nav-item" onclick="filterCat('Para Piyasası')">💵 Para Piyasası</div>
+    <div class="nav-item" onclick="filterCat('Karma')">⚖️ Karma</div>
+    <div class="sidebar-footer">
+      <div class="prem-card">
+        <h4>Premium</h4>
+        <p>Tüm pozisyonlar + AI analizi</p>
+        <button class="btn-prem">79₺/ay</button>
+      </div>
     </div>
   </div>
-</aside>
 
-<div class="main">
-  <div class="topbar">
-    <div class="topbar-title">Tüm Fonlar</div>
-    <div class="search-wrap">
-      <span class="si">⌕</span>
-      <input class="search-input" placeholder="Fon kodu veya adı..." oninput="doSearch(this.value)">
+  <div class="main">
+    <!-- FUNDS -->
+    <div id="sc-funds" class="screen active">
+      <div class="topbar">
+        <div class="topbar-title">Tüm Fonlar</div>
+        <div style="flex:1;"></div>
+        <div class="search-wrap">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <input class="search-inp" placeholder="Fon kodu veya adı..." oninput="doSearch(this.value)">
+        </div>
+      </div>
+      <div class="chips">
+        <div class="chip on" onclick="setChip('Tümü',this)">Tümü</div>
+        <div class="chip" onclick="setChip('Hisse',this)">Hisse</div>
+        <div class="chip" onclick="setChip('Katılım',this)">Katılım</div>
+        <div class="chip" onclick="setChip('Altın',this)">Altın</div>
+        <div class="chip" onclick="setChip('Borçlanma',this)">Borçlanma</div>
+        <div class="chip" onclick="setChip('Para Piyasası',this)">Para Piyasası</div>
+      </div>
+      <div class="content">
+        <div class="stats" id="stats">
+          <div class="stat"><div class="stat-lbl">Toplam Fon</div><div class="stat-val" id="stat-total">—</div><div class="stat-sub">TEFAS platformu</div></div>
+          <div class="stat"><div class="stat-lbl">Gösterilen</div><div class="stat-val" id="stat-shown">—</div><div class="stat-sub">Filtre sonucu</div></div>
+          <div class="stat"><div class="stat-lbl">En Yüksek 1Y</div><div class="stat-val" id="stat-best">—</div><div class="stat-sub green" id="stat-best-sub">—</div></div>
+          <div class="stat"><div class="stat-lbl">Son Güncelleme</div><div class="stat-val" id="stat-time">—</div><div class="stat-sub">TEFAS canlı</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <div>Fon</div>
+            <div style="text-align:right;">Tür</div>
+            <div style="text-align:right;">Büyüklük</div>
+            <div style="text-align:right;">Yatırımcı</div>
+            <div style="text-align:right;">3A</div>
+            <div style="text-align:right;">1Y</div>
+            <div></div>
+          </div>
+          <div id="tbl"><div class="loading-row"><div class="skeleton" style="width:60%"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton" style="width:50%"></div></div><div class="loading-row"><div class="skeleton" style="width:50%"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton" style="width:50%"></div></div><div class="loading-row"><div class="skeleton" style="width:70%"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton" style="width:50%"></div></div></div>
+        </div>
+      </div>
     </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;" id="cat-chips">
-      <div class="chip on" onclick="setChip('',this)">Tümü</div>
-      <div class="chip" onclick="setChip('Hisse',this)">Hisse</div>
-      <div class="chip" onclick="setChip('Katılım',this)">Katılım</div>
-      <div class="chip" onclick="setChip('Altın',this)">Altın</div>
-      <div class="chip" onclick="setChip('Borçlanma',this)">Borçlanma</div>
-      <div class="chip" onclick="setChip('Para Piyasası',this)">Para Piyasası</div>
+
+    <!-- SEARCH -->
+    <div id="sc-search" class="screen">
+      <div class="topbar"><div class="topbar-title">Hisse Ara — Hangi Fonlarda Var?</div></div>
+      <div class="content">
+        <input class="rev-input" placeholder="Hisse kodu girin... (THYAO, EREGL, ASELS, GARAN, TUPRS)" oninput="revSearch(this.value)">
+        <div id="revRes"><div class="empty"><h3>Bir hisse kodu girin</h3><p>BIST'te işlem gören hisse kodunu yazın</p></div></div>
+      </div>
     </div>
-  </div>
-  <div class="content">
-    <div class="stats">
-      <div class="stat"><div class="stat-lbl">Toplam Fon</div><div class="stat-val" id="s-total">—</div><div class="stat-sub">TEFAS platformu</div></div>
-      <div class="stat"><div class="stat-lbl">Gösterilen</div><div class="stat-val" id="s-showing">—</div><div class="stat-sub">Filtre sonucu</div></div>
-      <div class="stat"><div class="stat-lbl">En Yüksek 1Y</div><div class="stat-val green" id="s-best">—</div><div class="stat-sub" id="s-best-name">—</div></div>
-      <div class="stat"><div class="stat-lbl">Son Güncelleme</div><div class="stat-val" id="s-date" style="font-size:15px;">—</div><div class="stat-sub">TEFAS canlı</div></div>
-    </div>
-    <div id="main-content">
-      <div class="loading-box">
-        <div class="spinner"></div>
-        <div style="color:var(--text2);font-size:14px;">TEFAS verisi yükleniyor...</div>
+
+    <!-- COACH -->
+    <div id="sc-coach" class="screen">
+      <div class="topbar"><div class="topbar-title">AI Fon Koçu</div><div style="font-size:12px;color:var(--text3);margin-left:8px;">Claude destekli · Beta</div></div>
+      <div class="content">
+        <div class="coach-grid">
+          <div>
+            <div class="chat-box">
+              <div class="chat-hdr">
+                <div class="chat-av"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#9d93f8" stroke-width="1.5"/><path d="M5 8h6M8 5v6" stroke="#9d93f8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+                <div><div style="font-size:13px;font-weight:500;">Fonlor AI Koç</div><div style="font-size:11px;color:var(--green);">● Çevrimiçi</div></div>
+              </div>
+              <div class="sug-chips">
+                <div class="sug" onclick="sendSug('Katılım fonu nedir?')">Katılım fonu nedir?</div>
+                <div class="sug" onclick="sendSug('Yeni başlayanlar için fon öner')">Yeni başlayanlar</div>
+                <div class="sug" onclick="sendSug('Altın fonu mu döviz fonu mu?')">Altın vs döviz</div>
+                <div class="sug" onclick="sendSug('Stopaj vergisi nedir?')">Stopaj vergisi</div>
+              </div>
+              <div class="msgs" id="msgs">
+                <div class="msg ai"><div class="bubble">Merhaba! TEFAS'taki tüm fonlar hakkında sorularını yanıtlayabilirim.<br><br>Fon seçimi, katılım uyumu, risk analizi veya portföy çeşitlendirme konularında yardımcı olmaya hazırım.</div><div class="msg-time">Şimdi</div></div>
+              </div>
+              <div class="chat-inp-wrap">
+                <input class="chat-inp" id="chatInp" placeholder="Bir şey sor..." onkeydown="if(event.key==='Enter')sendMsg()">
+                <button class="send-btn" onclick="sendMsg()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M13 1L1 5.5l5 1.5 1.5 5L13 1z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <div class="coach-side">
+            <div class="coach-card">
+              <h3>AI Sinyalleri</h3>
+              <div class="alert-item"><div class="al-dot" style="background:var(--red)"></div><div class="al-txt">Hisse senedi fonlarında son 30 günde yatırımcı girişi hızlandı</div></div>
+              <div class="alert-item"><div class="al-dot" style="background:var(--amber)"></div><div class="al-txt">Altın fonlarında yatırımcı girişi artmaya devam ediyor</div></div>
+              <div class="alert-item"><div class="al-dot" style="background:var(--green)"></div><div class="al-txt">Para piyasası fonları düşük riskli getiri sağlamaya devam ediyor</div></div>
+            </div>
+            <div class="coach-card">
+              <h3>Popüler Sorular</h3>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div class="sug" style="border-radius:8px;" onclick="sendSug('THYAO hangi fonlarda var?')">THYAO hangi fonlarda? →</div>
+                <div class="sug" style="border-radius:8px;" onclick="sendSug('T+0 valörlü fonlar hangileri?')">T+0 valörlü fonlar →</div>
+                <div class="sug" style="border-radius:8px;" onclick="sendSug('Emeklilik için uzun vadeli fon stratejisi')">Emeklilik stratejisi →</div>
+                <div class="sug" style="border-radius:8px;" onclick="sendSug('Stopaj vergisi nedir, fonları nasıl etkiler?')">Stopaj vergisi →</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
-</div>
 
 <script>
-// ─── Config ───────────────────────────────────────────────────────────────────
-const CONFIG_KEY = "fonlor_api_url";
+const API = 'https://creativelayers.net/fonlor-api/api';
 
-function getApiUrl() {
-  return localStorage.getItem(CONFIG_KEY) || "";
-}
-function saveApiUrl() {
-  const val = document.getElementById("api-url-input").value.trim().replace(/\/$/, "");
-  if (!val.startsWith("http")) {
-    alert("Geçerli bir URL gir (https:// ile başlamalı)");
-    return;
-  }
-  localStorage.setItem(CONFIG_KEY, val);
-  document.getElementById("setup-modal").style.display = "none";
-  loadFunds();
-}
-function changeApiUrl() {
-  document.getElementById("api-url-input").value = getApiUrl();
-  document.getElementById("setup-modal").style.display = "flex";
-}
-
-// ─── State ────────────────────────────────────────────────────────────────────
-let ALL_FUNDS = [];
-let curCat = "", curQ = "";
-let sortCol = "r1y", sortDir = "desc";
-
-const CAT_STYLE = {
-  "Hisse":        {bg:"rgba(123,110,246,.15)",c:"#9d93f8"},
-  "Katılım":      {bg:"rgba(79,209,197,.12)", c:"#4fd1c5"},
-  "Altın":        {bg:"rgba(246,173,85,.12)", c:"#f6ad55"},
-  "Borçlanma":    {bg:"rgba(62,207,142,.1)",  c:"#3ecf8e"},
-  "Para Piyasası":{bg:"rgba(139,92,246,.1)",  c:"#a78bfa"},
-  "Karma":        {bg:"rgba(245,101,101,.1)", c:"#f56565"},
+const CAT_COLORS = {
+  'Hisse':        {bg:'rgba(123,110,246,.15)', c:'#9d93f8'},
+  'Katılım':      {bg:'rgba(79,209,197,.12)',  c:'#4fd1c5'},
+  'Altın':        {bg:'rgba(246,173,85,.12)',  c:'#f6ad55'},
+  'Borçlanma':    {bg:'rgba(62,207,142,.1)',   c:'#3ecf8e'},
+  'Para Piyasası':{bg:'rgba(139,92,246,.1)',   c:'#a78bfa'},
+  'Karma':        {bg:'rgba(245,101,101,.1)',  c:'#f56565'},
+  'Diğer':        {bg:'rgba(255,255,255,.05)', c:'#8a8f9e'},
 };
 
-function setStatus(state, text) {
-  document.getElementById("st-dot").className = "st-dot " + state;
-  document.getElementById("st-label").textContent = text;
-}
+let ALL_FUNDS = [];
+let curCat = 'Tümü', curQ = '';
 
-// ─── Veri yükle ───────────────────────────────────────────────────────────────
+/* ── API ── */
 async function loadFunds() {
-  const api = getApiUrl();
-  if (!api) {
-    document.getElementById("setup-modal").style.display = "flex";
-    return;
-  }
-
-  setStatus("spin", "Bağlanıyor...");
-  document.getElementById("main-content").innerHTML = `
-    <div class="loading-box">
-      <div class="spinner"></div>
-      <div style="color:var(--text2);font-size:14px;">TEFAS verisi çekiliyor...</div>
-      <div style="color:var(--text3);font-size:12px;margin-top:6px;">İlk yüklemede 5-10 saniye sürebilir</div>
-    </div>`;
-
   try {
-    const res = await fetch(`${api}/api/funds`, { signal: AbortSignal.timeout(30000) });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    ALL_FUNDS = json.funds || [];
+    const res = await fetch(`${API}/funds`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    ALL_FUNDS = data.funds || [];
 
-    setStatus("ok", `${ALL_FUNDS.length} fon`);
-    document.getElementById("fund-count-sub").textContent = `TEFAS · ${ALL_FUNDS.length} fon`;
-    document.getElementById("s-total").textContent = ALL_FUNDS.length;
+    // Stats
+    document.getElementById('stat-total').textContent = ALL_FUNDS.length;
+    document.getElementById('logo-sub').textContent = `TEFAS · ${ALL_FUNDS.length} fon`;
 
-    const t = json.updated_at ? new Date(json.updated_at).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"}) : "—";
-    document.getElementById("s-date").textContent = t;
+    // En iyi 1Y
+    const withR1y = ALL_FUNDS.filter(f => f.r1y != null).sort((a,b) => b.r1y - a.r1y);
+    if (withR1y.length) {
+      const best = withR1y[0];
+      document.getElementById('stat-best').textContent = `%${best.r1y > 0 ? '+' : ''}${best.r1y}`;
+      document.getElementById('stat-best-sub').textContent = best.FONKODU;
+    }
+
+    // Saat
+    const now = new Date();
+    document.getElementById('stat-time').textContent =
+      now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
 
     render();
-  } catch (e) {
-    setStatus("err", "Bağlantı hatası");
-    document.getElementById("main-content").innerHTML = `
-      <div class="error-box">
-        <h3>API'ye bağlanılamadı</h3>
-        <p>Railway sunucusu henüz hazır olmayabilir ya da URL yanlış girilmiş olabilir.</p>
-        <p><strong>URL:</strong> <code>${getApiUrl()}</code></p>
-        <p style="margin-top:12px;">Kontrol listesi:</p>
-        <p>1. Railway deploy başarıyla tamamlandı mı?</p>
-        <p>2. URL'i doğru kopyaladın mı? (https:// ile başlamalı)</p>
-        <p>3. Railway servisinin "Active" durumda olduğunu kontrol et</p>
-        <br>
-        <button onclick="changeApiUrl()" style="background:var(--accent);border:none;border-radius:8px;padding:9px 18px;color:#fff;cursor:pointer;font-family:'DM Sans';font-size:13px;">URL'i Güncelle</button>
-        <button onclick="loadFunds()" style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 18px;color:var(--text2);cursor:pointer;font-family:'DM Sans';font-size:13px;margin-left:8px;">Tekrar Dene</button>
-      </div>`;
+  } catch(e) {
+    console.error('API hatası:', e);
+    document.getElementById('tbl').innerHTML =
+      `<div class="empty"><h3>Veri yüklenemedi</h3><p>${e.message}</p><button onclick="loadFunds()" style="margin-top:12px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:inherit;">Tekrar Dene</button></div>`;
   }
 }
 
-// ─── Render ───────────────────────────────────────────────────────────────────
+/* ── Helpers ── */
+function fmtAum(v) {
+  if (v == null) return '—';
+  if (v >= 1e9) return '₺' + (v/1e9).toFixed(1) + 'Mr';
+  if (v >= 1e6) return '₺' + (v/1e6).toFixed(1) + 'M';
+  return '₺' + v.toLocaleString('tr-TR');
+}
+function fmtNum(v) {
+  if (v == null) return '—';
+  return v.toLocaleString('tr-TR');
+}
+function pctHtml(v) {
+  if (v == null) return '<span style="color:var(--text3)">—</span>';
+  const cls = v >= 0 ? 'green' : 'red';
+  const sign = v >= 0 ? '+' : '';
+  return `<span class="pct ${cls}">${sign}%${v}</span>`;
+}
+function catOf(f) {
+  const name = (f.FONUNVAN || '').toUpperCase();
+  if (name.includes('HİSSE') || name.includes('HISSE')) return 'Hisse';
+  if (name.includes('KATILIM')) return 'Katılım';
+  if (name.includes('ALTIN') || name.includes('ALTN')) return 'Altın';
+  if (name.includes('BORÇ') || name.includes('TAHVİL') || name.includes('BONO')) return 'Borçlanma';
+  if (name.includes('PARA PİYASASI') || name.includes('PARA PIYASASI')) return 'Para Piyasası';
+  if (name.includes('KARMA') || name.includes('DEĞİŞKEN') || name.includes('DEGISKEN')) return 'Karma';
+  return 'Diğer';
+}
+
+/* ── Render ── */
 function filtered() {
-  return ALL_FUNDS
-    .filter(f => !curCat || f.cat === curCat)
-    .filter(f => !curQ || f.code.toLowerCase().includes(curQ) || f.name.toLowerCase().includes(curQ))
-    .sort((a,b) => {
-      const va = a[sortCol] ?? -Infinity;
-      const vb = b[sortCol] ?? -Infinity;
-      return sortDir === "desc" ? vb-va : va-vb;
-    });
+  return ALL_FUNDS.filter(f => {
+    const cat = catOf(f);
+    const mc = curCat === 'Tümü' || cat === curCat;
+    const name = (f.FONUNVAN || '').toLowerCase();
+    const code = (f.FONKODU || '').toLowerCase();
+    const mq = !curQ || name.includes(curQ) || code.includes(curQ);
+    return mc && mq;
+  });
 }
 
 function render() {
   const list = filtered();
-  document.getElementById("s-showing").textContent = list.length;
+  document.getElementById('stat-shown').textContent = list.length;
 
-  const top = [...ALL_FUNDS].sort((a,b)=>(b.r1y||0)-(a.r1y||0))[0];
-  if (top) {
-    document.getElementById("s-best").textContent = top.r1y ? `+%${top.r1y.toFixed(1)}` : "—";
-    document.getElementById("s-best-name").textContent = top.code;
-  }
-
+  const tbl = document.getElementById('tbl');
   if (!list.length) {
-    document.getElementById("main-content").innerHTML = `<div style="text-align:center;padding:60px;color:var(--text3);">Sonuç bulunamadı</div>`;
+    tbl.innerHTML = '<div class="empty"><h3>Sonuç bulunamadı</h3><p>Farklı arama deneyin</p></div>';
     return;
   }
 
-  const api = getApiUrl();
-  const rows = list.map(f => {
-    const cs = CAT_STYLE[f.cat] || {bg:"var(--bg4)",c:"var(--text2)"};
-    const fp = v => v==null ? `<span style="color:var(--text3)">—</span>`
-      : `<span class="pct" style="color:${v>=0?'var(--green)':'var(--red)'}">${v>=0?'+':''}%${v.toFixed(1)}</span>`;
-    const fa = v => {
-      if (!v) return "—";
-      if (v>=1e9) return "₺"+(v/1e9).toFixed(1)+"M";
-      if (v>=1e6) return "₺"+(v/1e6).toFixed(1)+"B";
-      return "₺"+v.toLocaleString("tr-TR");
-    };
-    return `<a class="fund-row" href="fon.html?kod=${f.code}&api=${encodeURIComponent(api)}">
-      <div style="display:flex;align-items:center;gap:10px;min-width:0;">
-        <div class="f-av" style="background:${cs.bg};color:${cs.c}">${f.code.slice(0,2)}</div>
+  tbl.innerHTML = list.map(f => {
+    const cat = catOf(f);
+    const cc = CAT_COLORS[cat] || CAT_COLORS['Diğer'];
+    const katilim = (f.FONUNVAN||'').toUpperCase().includes('KATILIM');
+    const code = f.FONKODU || '';
+    const name = f.FONUNVAN || code;
+    const price = f.FIYAT != null ? `₺${parseFloat(f.FIYAT).toFixed(4)}` : '—';
+
+    return `<a class="fund-row" href="fon.html?kod=${code}">
+      <div class="f-name-wrap">
+        <div class="f-av" style="background:${cc.bg};color:${cc.c};">${code.slice(0,2)}</div>
         <div style="min-width:0;">
-          <div class="f-name">${f.name||f.code}</div>
-          <div class="f-code">${f.code}${f.katilim?' · <span style="color:var(--teal)">Katılım</span>':''}</div>
+          <div class="f-name">${name}</div>
+          <div class="f-code">${code} · ${price}${katilim?' · <span style="color:var(--teal);font-size:10px;">Katılım</span>':''}</div>
         </div>
       </div>
-      <div class="f-cell"><span class="cat-badge" style="background:${cs.bg};color:${cs.c}">${f.cat||"—"}</span></div>
-      <div class="f-cell">${fa(f.aum)}</div>
-      <div class="f-cell">${f.investors?f.investors.toLocaleString("tr-TR"):"—"}</div>
-      <div class="f-cell">${fp(f.r3m)}</div>
-      <div class="f-cell">${fp(f.r1y)}</div>
-      <div><button class="btn-d">Detay →</button></div>
+      <div class="f-cell"><span class="cat-badge" style="background:${cc.bg};color:${cc.c};">${cat}</span></div>
+      <div class="f-cell">${fmtAum(f.PORTFOYBUYUKLUK)}</div>
+      <div class="f-cell">${fmtNum(f.KISISAYISI)}</div>
+      <div class="f-cell">${pctHtml(f.r3m)}</div>
+      <div class="f-cell">${pctHtml(f.r1y)}</div>
+      <div><button class="btn-detail" onclick="event.preventDefault();window.location='fon.html?kod=${code}'">Detay →</button></div>
     </a>`;
-  }).join("");
+  }).join('');
+}
 
-  const sc = col => `class="sortable${sortCol===col?' sort-'+sortDir:''}"`;
-  document.getElementById("main-content").innerHTML = `
-    <div class="tbl-wrap">
-      <div class="tbl-head">
-        <div>Fon</div>
-        <div style="text-align:right">Tür</div>
-        <div ${sc('aum')} style="text-align:right" onclick="setSort('aum')">Büyüklük</div>
-        <div ${sc('investors')} style="text-align:right" onclick="setSort('investors')">Yatırımcı</div>
-        <div ${sc('r3m')} style="text-align:right" onclick="setSort('r3m')">3 Ay</div>
-        <div ${sc('r1y')} style="text-align:right" onclick="setSort('r1y')">1 Yıl</div>
-        <div></div>
+/* ── Nav ── */
+function showScreen(s) {
+  document.querySelectorAll('.screen').forEach(e => e.classList.remove('active'));
+  document.getElementById('sc-' + s).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach((e,i) => {
+    if(i < 3) e.classList.remove('active');
+  });
+  const idx = {funds:0, search:1, coach:2}[s];
+  document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
+}
+function filterCat(c) { showScreen('funds'); curCat = c; render(); }
+function setChip(c, el) {
+  curCat = c;
+  document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+  if (el) el.classList.add('on');
+  render();
+}
+function doSearch(v) { curQ = v.toLowerCase().trim(); render(); }
+
+/* ── Reverse search ── */
+function revSearch(v) {
+  const q = v.trim().toUpperCase();
+  const c = document.getElementById('revRes');
+  if (!q) { c.innerHTML = '<div class="empty"><h3>Bir hisse kodu girin</h3><p>BIST hisse kodunu yazın</p></div>'; return; }
+  // Portföyde bu hisseyi aramak için fon detay sayfasına yönlendir — bu özellik premium
+  c.innerHTML = `<div class="rev-card">
+    <div class="rev-header">
+      <div><div style="font-size:15px;font-weight:600;">${q}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:2px;">Hangi fonlarda bulunduğunu görmek için portföy verisine ihtiyaç var</div></div>
+    </div>
+    <div style="padding:20px 18px;font-size:13px;color:var(--text2);">
+      Bu özellik yakında aktif olacak — portföy verisi TEFAS'tan çekilecek.<br><br>
+      Şimdilik bir fona tıklayarak portföyüne bakabilirsin.
+      <div style="margin-top:12px;">
+        <a href="index.html" style="background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;font-size:12px;display:inline-block;">Fonlara Dön</a>
       </div>
-      <div>${rows}</div>
-    </div>`;
+    </div>
+  </div>`;
 }
 
-function setFilter(cat, el) {
-  curCat = cat;
-  document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));
-  if(el) el.classList.add("active");
-  render();
+/* ── AI Koç ── */
+const AI_R = {
+  katilim: 'Katılım fonu, faiz (riba) içermeyen enstrümanlara yatırım yapan fondur. Devlet tahvili yerine kira sertifikası, banka mevduatı yerine faizsiz ürünler kullanılır.\n\nTEFAS\'ta 80\'den fazla aktif katılım fonu var. Düşük risk için değişken katılım fonlarına, yüksek getiri için hisse katılım fonlarına bakabilirsin.',
+  altin: 'Altın fonu ile döviz fonu farklı dinamiklere göre davranır.\n\n**Altın fonu**: Fiziksel altına endeksli, hem dolar hem altın fiyatından faydalanıyor.\n\n**Döviz fonu**: Doğrudan USD/EUR, daha istikrarlı ama daha az potansiyel.\n\nUzun vadeli enflasyon koruması için altın genellikle daha güçlü performans göstermiş.',
+  yeni: 'Yeni başlayanlar için 3 adım:\n\n1. **Para piyasası fonu** — Risk 1, T+0, sermayeni koruduğun başlangıç noktası\n2. **Değişken fon** — Risk 3, çeşitlendirilmiş, orta yol\n3. **Hisse fonu** — Uzun vadeli düşünüyorsan, 5+ yıl ufkuyla\n\nÖnce para piyasasını dene, nasıl çalıştığını gör, sonra kademe kademe risk al.',
+  stopaj: 'Yatırım fonlarında stopaj vergisi:\n\n• **Hisse senedi yoğun fonlar** (%80+ hisse): Stopaj **%0** — En avantajlı kategori\n• **Diğer fonlar**: %10 stopaj uygulanır\n\nHisse yoğun fon seçmek ciddi vergi avantajı sağlar.',
+  default: 'TEFAS\'taki tüm fonlar hakkında yardımcı olmaya çalışırım. Sol menüden kategori filtrelerini kullanarak fonları daraltabilirsin.\n\nDaha spesifik bir soru sorabilirsin — belirli bir fon kodu, risk seviyesi veya kategori hakkında bilgi verebilirim.',
+};
+function getReply(m) {
+  const l = m.toLowerCase();
+  if (l.includes('katılım') || l.includes('faizsiz')) return AI_R.katilim;
+  if (l.includes('altın') || l.includes('döviz')) return AI_R.altin;
+  if (l.includes('yeni') || l.includes('başlayan')) return AI_R.yeni;
+  if (l.includes('stopaj') || l.includes('vergi')) return AI_R.stopaj;
+  return AI_R.default;
 }
-function setChip(cat, el) {
-  curCat = cat;
-  document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
-  el.classList.add("on");
-  render();
+function appendMsg(role, text) {
+  const c = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = `msg ${role}`;
+  d.innerHTML = `<div class="bubble">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div><div class="msg-time">Şimdi</div>`;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
 }
-function doSearch(v) { curQ = v.toLowerCase(); render(); }
-function setSort(col) {
-  sortDir = sortCol===col ? (sortDir==="desc"?"asc":"desc") : "desc";
-  sortCol = col;
-  render();
+function showTyping() {
+  const c = document.getElementById('msgs');
+  const d = document.createElement('div'); d.className = 'msg ai'; d.id = 'typ';
+  d.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
 }
+function sendMsg() {
+  const inp = document.getElementById('chatInp');
+  const m = inp.value.trim(); if (!m) return;
+  inp.value = ''; appendMsg('user', m); showTyping();
+  setTimeout(() => { document.getElementById('typ')?.remove(); appendMsg('ai', getReply(m)); }, 700 + Math.random()*400);
+}
+function sendSug(t) { document.getElementById('chatInp').value = t; sendMsg(); }
 
-// ─── Başlat ───────────────────────────────────────────────────────────────────
-if (!getApiUrl()) {
-  document.getElementById("setup-modal").style.display = "flex";
-} else {
-  loadFunds();
-}
-setInterval(loadFunds, 300_000);
+// Başlat
+loadFunds();
 </script>
 </body>
 </html>
