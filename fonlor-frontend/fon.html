@@ -954,7 +954,7 @@ async function loadFund(){
     setTimeout(async () => {
       try {
         const m60 = monthsBeforeDate(lastTradeDate,60);
-        const rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(m60), bittarih:dateStr(new Date(m60.getTime()+7*86400000)) });
+        const rows = await tefasPost('BindHistoryInfo', { fontip:'YAT', fonkod:FUND_CODE, bastarih:dateStr(m60), bittarih:dateStr(new Date(m60.getTime()+14*86400000)) });
         const row = rows.filter(r=>r.FONKODU===FUND_CODE)[0];
         if(row?.FIYAT) {
           const r5y = ((currentPrice - parseFloat(row.FIYAT)) / parseFloat(row.FIYAT)) * 100;
